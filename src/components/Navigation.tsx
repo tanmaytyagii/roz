@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { NAV } from '../data/stories'
+import { NAV, navHref } from '../data/stories'
 import { Wordmark } from './Wordmark'
 import { useNavState } from '../lib/useNavState'
 import { lockScroll } from '../lib/useLenis'
@@ -16,7 +16,17 @@ export function Navigation({ path }: { path: string }) {
   const { settled, hidden, onPaper, progress } = useNavState(path)
   const [menu, setMenu] = useState(false)
   const home = path === '/'
-  const to = (href: string) => (home ? href : `/${href}`)
+  const to = (href: string) => navHref(href, home)
+  // Every document opens on a different first landmark.
+  const skipTo = home
+    ? '#intro'
+    : path === '/people'
+      ? '#people-top'
+      : path === '/places'
+        ? '#places-top'
+        : path === '/sounds'
+          ? '#sounds-top'
+          : '#story-top'
 
   // The overlay owns the page while it is open — including Lenis, which would
   // otherwise keep scrolling the document underneath it.
@@ -36,7 +46,7 @@ export function Navigation({ path }: { path: string }) {
   return (
     <>
       <a
-        href={home ? '#intro' : '#story-top'}
+        href={skipTo}
         className="u-label sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[90] focus:bg-paper focus:px-4 focus:py-3 focus:text-ink"
       >
         Skip to content
@@ -163,7 +173,7 @@ function Menu({ home, onClose }: { home: boolean; onClose: () => void }) {
               className="col-span-12 border-t border-ink/12 md:col-span-10 md:col-start-2"
             >
               <Link
-                to={home ? item.href : `/${item.href}`}
+                to={navHref(item.href, home)}
                 onClick={onClose}
                 className="group flex items-baseline gap-[clamp(1rem,3vw,3rem)] py-[clamp(0.5rem,1.6vh,1.1rem)]"
               >

@@ -162,8 +162,16 @@ export const ANSWERS: { deva: string; gloss: string; who: string }[] = [
 
 export const NAV = [
   { label: 'Stories', href: '#stories' },
-  { label: 'People', href: '#people' },
-  { label: 'Places', href: '#places' },
-  { label: 'Sounds', href: '#sounds' },
+  { label: 'People', href: '/people' },
+  { label: 'Places', href: '/places' },
+  { label: 'Sounds', href: '/sounds' },
   { label: 'About', href: '#about' },
 ] as const
+
+/**
+ * NAV is written from the homepage's point of view: most of it is anchors into
+ * that document. From anywhere else a hash has to carry the path home with it,
+ * while an entry that is already a path stands on its own.
+ */
+export const navHref = (href: string, onHome: boolean) =>
+  href.startsWith('#') && !onHome ? `/${href}` : href

@@ -1,7 +1,9 @@
 import { motion } from 'motion/react'
-import { NAV } from '../data/stories'
+import { NAV, navHref } from '../data/stories'
 import { FRAMES } from '../data/frames.generated'
 import { Wordmark } from './Wordmark'
+import { Link } from './Link'
+import { useRoute } from '../lib/router'
 import { rise } from '../lib/motion'
 
 /** Unique photographers, in the order their frames first appear. */
@@ -14,6 +16,11 @@ const PHOTOGRAPHERS = Array.from(
 )
 
 export function Footer() {
+  // The footer is on every document, and its section links are anchors into
+  // the homepage. From anywhere else they have to carry the path with them or
+  // they point at nothing.
+  const home = useRoute().path === '/'
+
   return (
     <footer data-canvas="ink" className="bg-ink pt-[clamp(4rem,11vh,8rem)] pb-[clamp(1.5rem,4vh,2.5rem)]">
       <div className="u-pad">
@@ -27,9 +34,12 @@ export function Footer() {
             <ul className="flex flex-col gap-2">
               {NAV.map((n) => (
                 <li key={n.label}>
-                  <a href={n.href} className="u-mono text-ash transition-colors duration-[250ms] hover:text-cream">
+                  <Link
+                    to={navHref(n.href, home)}
+                    className="u-mono text-ash transition-colors duration-[250ms] hover:text-cream"
+                  >
                     {n.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

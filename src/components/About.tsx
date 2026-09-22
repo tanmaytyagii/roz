@@ -53,10 +53,7 @@ export function About() {
 }
 
 const UPCOMING = [
-  { id: 'sounds', n: 3, title: 'Sounds', deva: 'आवाज़ें', line: 'Listen to India. Eight cities, eight ambient recordings, nothing autoplayed.' },
-  { id: 'people', n: 4, title: 'People', deva: 'लोग', line: 'A portrait mosaic that reads as one word until you move closer to it.' },
-  { id: 'places', n: 5, title: 'Places', deva: 'जगहें', line: 'Where ROZ lives — a drawn map of the country, marked story by story.' },
-  { id: 'archive', n: 6, title: 'Archive', deva: 'संग्रह', line: 'Every day filed by city, trade, hour and theme.' },
+  { id: 'archive', n: 3, title: 'Archive', deva: 'संग्रह', line: 'Every day filed by city, trade, hour and theme.' },
 ]
 
 /** The contents page. Also what the nav's remaining links point at. */
@@ -77,7 +74,8 @@ export function InProduction() {
             {...rise(0.1)}
             className="u-mono col-span-12 max-w-[42ch] self-end text-dim lg:col-span-4 lg:col-start-9"
           >
-            Chapter one is what you have just read. Everything below is being made.
+            The homepage, the people, the places, the sounds, and the first day inside them. This is what is
+            left.
           </motion.p>
         </div>
       </div>

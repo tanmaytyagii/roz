@@ -121,7 +121,16 @@ export function Opening({ story, doc }: { story: Story; doc: StoryDoc }) {
             </div>
             <div>
               <dt className="sr-only">Place</dt>
-              <dd className="u-label text-paper/85">{story.place}</dd>
+              {/* Quiet on purpose: the same label it has always been, that
+                  happens to lead to the map. */}
+              <dd className="u-label text-paper/85">
+                <Link
+                  to="/places"
+                  className="underline-offset-[5px] transition-colors duration-[250ms] hover:text-clay-ink hover:underline focus-visible:text-clay-ink"
+                >
+                  {story.place}
+                </Link>
+              </dd>
             </div>
             <div className="ml-auto">
               <dt className="sr-only">In Devanagari</dt>

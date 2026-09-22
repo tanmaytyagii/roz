@@ -3,8 +3,9 @@
 **हर दिन की एक कहानी।**
 Stories from the India you don't see.
 
-An interactive documentary about everyday India. This repository holds **chapter one, the
-homepage**, and **chapter two, the first story** — Raju, the mason, at `/story/raju`.
+An interactive documentary about everyday India. Five documents so far: the **homepage**, the
+**archive** at `/people`, the **map** at `/places`, the **sound archive** at `/sounds`, and the
+first **story** — Raju, the mason, at `/story/raju`.
 
 ---
 
@@ -34,9 +35,12 @@ caption, the footer, the foot of Raju's opening slate, and a full editorial note
 of his story — because a demo that quietly attaches invented biographies to real faces is not a
 demo, it is a fabrication.
 
-The **soundscapes** are the same arrangement: CC-licensed field recordings, trimmed to a loop,
-credited by name and licence, three of the four recorded in India and one not. The page says
-which. Nothing plays until somebody presses play, and no audio file is fetched before then.
+The **soundscapes** are the same arrangement: CC-licensed field recordings, trimmed to a loop
+and credited by name and licence. Two of the four name India in the recording's own title; the
+other two do not say where they were made, and none of them was recorded in any of the towns
+ROZ has stories in. `/sounds` prints each recording's real title and origin next to it rather
+than assigning it a location. Nothing plays until somebody presses play, and no audio file is
+fetched before then.
 
 The photographs are real, CC-licensed documentary work, sourced through
 [Openverse](https://openverse.org) and credited beside every frame with a link to the
@@ -53,11 +57,20 @@ permissions.
 
 ```
 src/
-  App            the router: `/` and `/story/<slug>`, and nothing else
+  App            the router: `/`, `/people`, `/places`, `/sounds`, `/story/<slug>`,
+                 not-found. Everything but the homepage is a lazy chunk, warmed on idle.
   pages/
     Home           chapter one, the homepage
+    PeoplePage     the archive — a contents page for the whole publication
+    PlacesPage     the map, the panel, the written index of towns
+    SoundsPage     the sound archive, and the silence
     StoryPage      chapter two — reads one story document, section by section
+    NotFound       an address that matches nobody, said out loud
   components/
+    people/
+      PeopleIndex  the contents: names left, one plate right, a typographic filter
+    places/
+      IndiaMap     one coastline, seven marks — no mapping library
     story/
       Opening      the slate: name, particulars, the line he is known for
       TheDay       seven single-shot hours + the fixed clock and time rail
@@ -82,11 +95,14 @@ src/
     Wordmark       ROZ | रोज़
   data/
     stories.ts              demo cast, places, answers, nav
-    story.ts                the STORY DOCUMENT shape + the registry
+    story.ts                the STORY DOCUMENT shape, the registry, `statusOf`
+    places.ts               stories grouped by where they are + one coordinate table
+    soundscapes.ts          recordings a story carries + one honest origin line each
     story-raju.ts           Raju's document — every word of the story
     frames.generated.ts     AUTO-GENERATED image manifest — do not edit
     sounds.generated.ts     AUTO-GENERATED audio manifest — do not edit
   lib/
+    audio.ts       one transport for the whole site — see below
     router.ts      pathnames, the History API, one event. No dependency.
     motion.ts      reveal primitives; every one collapses under reduced motion
     useLenis.ts    smooth scroll (lazy-loaded, desktop only) + scroll lock
@@ -101,21 +117,33 @@ tools/
   shoot.mjs          screenshots the running site at four viewports
   audit.mjs          first-screen weight, LCP, CLS, reduced motion, scroll lock
   story.mjs          drives a story: routing, Back, the dip, the clock, the sound, RM
+  archive.mjs        walks homepage → people → story → back, and the index itself
+  places.mjs         the marks, the panel, the counts, and place → story → place
+  sounds.mjs         0 bytes before a press, one at a time, play/pause/stop/end
   a11y.mjs           overflow at 390/768/1440, and the first ten keyboard stops
 ```
 
 ### Adding the next person
 
-The story page is a reader for a document, not a page about Raju.
+Every page that mentions a person is a reader for the data, not a page about Raju.
 
 1. Add the frames to the `PICKS` table in `tools/build-images.mjs` (and to `MOBILE` for any
    that go full-bleed), then run it.
 2. Write `src/data/story-<slug>.ts` against the `StoryDoc` type.
 3. Register it in `STORY_DOCS` in `src/data/story.ts`.
 
-`/story/<slug>` now exists, their spread on the homepage turns into a link on its own, and the
-plate for them in every other story's archive flips from *In production* to *Enter story*. No
+That is the whole change. `statusOf()` answers *available* or *in production* from the registry
+and nothing else, so registering a document simultaneously: opens `/story/<slug>`; turns their
+spread on the homepage into a link; moves their row in `/people` from a button that explains
+itself into a link that carries their sentence and their running time; updates the counts beside
+`All`, `Available` and `In production`; flips their plate at the foot of every other story; and
+flips their **town** on `/places` from *in production* to *available*. A second story in a town
+ROZ has already been to raises that town's count on the map and in the index on its own. No
 component is copied and no layout is touched.
+
+A story in a town that is **new** needs one more line — its latitude and longitude, in `COORDS`
+in `src/data/places.ts`. Until it has them the town still appears in the written index, listed
+under the drawing as not yet placed, rather than disappearing or crashing.
 
 ### Regenerating the imagery
 
@@ -178,6 +206,50 @@ down to a loop without putting a transcoder in the toolchain.
   strength. It sits outside the bar on purpose: the bar leaves on the way down and the line
   should not leave with it.
 
+### The archive
+
+- **A contents page, not a grid of people.** Names run down the left at display size; one plate
+  sits to the right of them and changes to whoever the reader is on. It follows the scroll, and
+  hover and focus override it — so the keyboard is shown the same photograph the mouse is.
+- **The plate is not a cursor-follower.** ROZ had one of those and it was removed; this is the
+  opposite idea. The photograph belongs to the page.
+- **Status is derived, never declared.** A row reads louder because the story exists.
+- **The filter is three words.** `All`, `Available`, `In production`, with counts. It is the only
+  distinction a reader actually needs, and it is real state rather than an invented taxonomy.
+
+### The map
+
+- **No mapping library, and no tiles.** India is one closed path: eighty-odd real coastal and
+  border coordinates run through the same equirectangular projection the markers use, then
+  through a Catmull-Rom spline so it reads as a line somebody drew rather than a chart. It is
+  about 2 kB of path data and it is generated at module load.
+- **The marks are HTML, not SVG.** The drawing is `aria-hidden` — it is a picture. The seven
+  marks are ordinary `<button>`s laid over it at their projected share of the box, which is how
+  they get focus, a name, the site's focus ring and a 39px hit area for nothing.
+- **Hover and focus preview; a click pins.** One panel beside the map, never a popup.
+- **At phone width only the live name is set.** Seven labels at that scale is a pile of type,
+  not a map.
+- **It is deliberately poor at being a map** — no state lines, no roads, no districts, no
+  search. It knows seven towns because ROZ has been to seven towns.
+
+### The sound
+
+- **One transport for the whole site.** `lib/audio.ts` holds a single module-level
+  `HTMLAudioElement`, created the first time anybody presses play and never before. Because
+  there is exactly one element, two recordings cannot overlap — starting a second is the same
+  act as stopping the first — and that holds across the story page and the archive without
+  either knowing about the other.
+- **Discrete state re-renders; position does not.** Which recording and what it is doing goes
+  through `useSyncExternalStore`. The clock and the progress rule are written straight into
+  their nodes on rAF, because a readout that re-rendered a list sixty times a second would be a
+  strange way to spend a battery.
+- **The interface is an annotation.** Three hairlines, a word, a clock, and a rule that fills
+  along the bottom of the row — the row *is* the progress bar. No artwork, no waveform, no
+  volume, no queue.
+- **Nothing is assigned a location.** The four recordings are somebody else's field work
+  standing in for four hours of Raju's day. Each row prints what the recording actually is,
+  off its own metadata, and says it stands in rather than that it was recorded there.
+
 ### Inside a story
 
 - **The light is the hour.** Each of the seven chapters carries its own two-stop gradient,
@@ -209,14 +281,14 @@ Production build, 1440×900, local preview:
 
 | | |
 |---|---|
-| JS | 143 kB gzip (+5 kB Lenis, loaded off the critical path) |
-| CSS | 8 kB gzip |
+| JS | 137 kB gzip entry (+5 kB Lenis, +22 kB of route chunks, all off the critical path) |
+| CSS | 9 kB gzip |
 | Fonts | 144 kB, preloaded, subset |
 | First screen | ~890 kB including all three hero plates |
 | LCP | ~90 ms |
 | CLS | 0 |
 | Grain | no measurable frame cost — a locked 16.7 ms median either way |
-| Audio | 0 bytes until somebody presses play (4 × ~25 s, ~0.5 MB each) |
+| Audio | 0 bytes until somebody presses play (4 × 25 s, ~0.5 MB each) |
 
 Every frame ships AVIF with a WebP fallback at 2–4 widths, carries an inlined 20px placeholder,
 and declares its dimensions. Only the first hero plate is eager; the other two load after
@@ -226,7 +298,7 @@ and declares its dimensions. Only the first hero plate is eager; the other two l
 
 ## Not built
 
-The other six days, the site-wide soundscapes, the portrait mosaic, the map and the archive.
-The homepage's contents section lists them; the six unbuilt spreads say so when you press
-`ENTER STORY` rather than pretending, and their plates in Raju's archive are marked
-*In production*.
+The other six days, and the faceted archive that files a day by city, trade, hour and theme. The homepage's contents section lists them. Nothing
+pretends: an entry marked *in production* in `/people` has a photograph and a premise and
+nothing else, pressing it says so instead of opening an empty page, and no half-written
+interview is invented to fill the gap.

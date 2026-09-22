@@ -1,10 +1,21 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { Navigation } from './components/Navigation'
 import { Footer } from './components/Footer'
 import { Grain } from './components/Grain'
 import { Home } from './pages/Home'
-import { StoryPage } from './pages/StoryPage'
+
+/**
+ * The homepage is what arrives first, so it is the only document in the entry
+ * chunk. The other four load on their way in — behind the dip, which is long
+ * enough to cover a same-origin chunk, and prefetched on idle so in practice
+ * they are already there before anybody clicks.
+ */
+const StoryPage = lazy(() => import('./pages/StoryPage').then((m) => ({ default: m.StoryPage })))
+const PeoplePage = lazy(() => import('./pages/PeoplePage').then((m) => ({ default: m.PeoplePage })))
+const PlacesPage = lazy(() => import('./pages/PlacesPage').then((m) => ({ default: m.PlacesPage })))
+const SoundsPage = lazy(() => import('./pages/SoundsPage').then((m) => ({ default: m.SoundsPage })))
+const NotFound = lazy(() => import('./pages/NotFound').then((m) => ({ default: m.NotFound })))
 import { useLenis } from './lib/useLenis'
 import { useRoute, useScrollRestoration } from './lib/router'
 import { DISSOLVE, usePrefersReducedMotion } from './lib/motion'
@@ -36,6 +47,27 @@ export default function App() {
     return () => clearTimeout(t)
   }, [dipping, route])
 
+  // Warm the other documents once the first one is on screen and the browser
+  // has nothing better to do, so a click lands on a chunk that is already here.
+  useEffect(() => {
+    let live = true
+    const warm = () => {
+      if (!live) return
+      void import('./pages/PeoplePage')
+      void import('./pages/PlacesPage')
+      void import('./pages/SoundsPage')
+      void import('./pages/StoryPage')
+    }
+    // requestIdleCallback is still missing on older Safari.
+    const idle = 'requestIdleCallback' in window
+    const handle = idle ? requestIdleCallback(warm, { timeout: 3000 }) : window.setTimeout(warm, 1800)
+    return () => {
+      live = false
+      if (idle) cancelIdleCallback(handle as number)
+      else clearTimeout(handle as number)
+    }
+  }, [])
+
   const slug = STORY.exec(shown.path)?.[1]
 
   return (
@@ -51,7 +83,21 @@ export default function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: RISE / 1000, ease: DISSOLVE }}
         >
-          {slug ? <StoryPage slug={slug} /> : <Home />}
+          <Suspense fallback={null}>
+            {slug ? (
+              <StoryPage slug={slug} />
+            ) : shown.path === '/' ? (
+              <Home />
+            ) : shown.path === '/people' ? (
+              <PeoplePage />
+            ) : shown.path === '/places' ? (
+              <PlacesPage />
+            ) : shown.path === '/sounds' ? (
+              <SoundsPage />
+            ) : (
+              <NotFound />
+            )}
+          </Suspense>
         </motion.div>
       </main>
       <Footer />

@@ -1,7 +1,7 @@
 import { useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react'
 import type { Story } from '../data/stories'
-import { STORY_DOCS } from '../data/story'
+import { isAvailable } from '../data/story'
 import { Frame, Credit } from './Frame'
 import { Link } from './Link'
 import { DISSOLVE, rise, uncover, usePrefersReducedMotion } from '../lib/motion'
@@ -17,7 +17,7 @@ const deva = (n: number) =>
 /** The same mark either way: a link where the day exists, an admission where it does not. */
 function EnterStory({ story }: { story: Story }) {
   const [told, setTold] = useState(false)
-  const built = Boolean(STORY_DOCS[story.slug])
+  const built = isAvailable(story.slug)
 
   const mark = (
     <>

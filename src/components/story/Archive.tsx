@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { STORIES } from '../../data/stories'
-import { STORY_DOCS } from '../../data/story'
+import { isAvailable } from '../../data/story'
 import { Frame } from '../Frame'
 import { ChapterMark } from '../ChapterMark'
 import { Link } from '../Link'
@@ -47,14 +47,14 @@ export function Archive({ slug }: { slug: string }) {
             One day, of seven.
           </motion.h2>
           <motion.p {...rise(0.1)} className="u-mono col-span-12 max-w-[40ch] self-end text-ash lg:col-span-4 lg:col-start-9">
-            Six more are written and photographed on the homepage. Their days are being built.
+            Six more are written and photographed. Their days are being assembled in the archive.
           </motion.p>
         </div>
       </div>
 
       <ul className="u-pad u-grid gap-y-[clamp(2rem,5vh,3rem)] pb-[clamp(4rem,12vh,8rem)]">
         {others.map((s, i) => {
-          const built = Boolean(STORY_DOCS[s.slug])
+          const built = isAvailable(s.slug)
           return (
             <motion.li
               key={s.slug}
@@ -62,7 +62,7 @@ export function Archive({ slug }: { slug: string }) {
               className="col-span-6 sm:col-span-4 lg:col-span-2"
             >
               <Link
-                to={built ? `/story/${s.slug}` : '/#stories'}
+                to={built ? `/story/${s.slug}` : '/people'}
                 className="group block"
               >
                 <div className="overflow-hidden">
@@ -106,14 +106,14 @@ export function Archive({ slug }: { slug: string }) {
       <div className="u-pad pb-[clamp(4rem,12vh,8rem)]">
         <motion.div {...rise()} className="border-t border-paper/12 pt-[clamp(2rem,6vh,4rem)]">
           <Link
-            to="/#stories"
+            to="/people"
             className="group inline-flex flex-wrap items-baseline gap-x-[clamp(1rem,3vw,2.5rem)] gap-y-2"
           >
             <span
               className="u-display text-ash transition-[transform,color] duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-[0.1em] group-hover:text-cream"
               style={{ fontSize: 'clamp(2rem, 7vw, 5.5rem)', lineHeight: 1 }}
             >
-              Back to the stories
+              Back to the archive
             </span>
             <span lang="hi" className="u-deva text-dim" style={{ fontSize: 'clamp(1rem,1.7vw,1.375rem)' }}>
               कहानियाँ

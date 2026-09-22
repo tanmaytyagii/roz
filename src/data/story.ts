@@ -87,6 +87,19 @@ export const STORY_DOCS: Record<string, StoryDoc> = {
 
 export const getStoryDoc = (slug: string): StoryDoc | undefined => STORY_DOCS[slug]
 
+/**
+ * A story is available when its document exists, and in production when it
+ * does not. Nothing anywhere declares this by hand: writing the data file and
+ * registering it above is what moves a person from one state to the other, on
+ * the homepage, in the archive and at the foot of every other story at once.
+ */
+export type StoryStatus = 'available' | 'in-production'
+
+export const statusOf = (slug: string): StoryStatus =>
+  STORY_DOCS[slug] ? 'available' : 'in-production'
+
+export const isAvailable = (slug: string) => statusOf(slug) === 'available'
+
 /** Minutes past midnight, for the clock and the time rail. */
 export const minutesOf = (time: string) => {
   const [h, m] = time.split(':').map(Number)
