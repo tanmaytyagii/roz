@@ -1,0 +1,25 @@
+node_modules
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+
+# Sourcing scratch: raw candidate downloads and contact sheets. Regenerate with
+# `node tools/fetch-images.mjs tools/slots.json`. The graded, committed frames
+# live in public/frames.
+.imgcache
+
+# Review screenshots from tools/shoot.mjs
+.shots
+
+.DS_Store
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Nothing here needs an environment — the site has no services, no API keys and
+# no secrets. This is here so that stays true by accident as well as on purpose.
+.env
+.env.*
+!.env.example

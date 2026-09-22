@@ -1,0 +1,15 @@
+[
+  {"id":"hero","aspect":"wide","n":8,"max":16,"queries":["india construction worker brick","indian labourer construction site","india bricklayer mason work","construction worker india sunset"]},
+  {"id":"raju","aspect":"tall","n":6,"max":12,"queries":["indian mason bricklayer portrait","india construction worker portrait","indian labourer man working bricks"]},
+  {"id":"shanti","aspect":"tall","n":6,"max":12,"queries":["varanasi flower seller woman","india marigold flower seller market","indian woman selling flowers ghat"]},
+  {"id":"imran","aspect":"tall","n":6,"max":12,"queries":["auto rickshaw driver india portrait","indian rickshaw driver man","autorickshaw driver lucknow"]},
+  {"id":"meena","aspect":"tall","n":6,"max":12,"queries":["indian tailor sewing machine shop","india woman sewing tailor","tailor india stitching cloth"]},
+  {"id":"ramesh","aspect":"tall","n":6,"max":12,"queries":["chai wallah tea seller india","indian tea stall vendor mumbai","chai stall india man pouring tea"]},
+  {"id":"asha","aspect":"tall","n":6,"max":12,"queries":["indian nurse hospital ward","india nurse healthcare worker","hospital india night ward nurse"]},
+  {"id":"arjun","aspect":"tall","n":6,"max":12,"queries":["kolkata street photographer","india street photography man camera","photographer india street portrait"]},
+  {"id":"bleed-chai","aspect":"wide","n":6,"max":12,"queries":["chai glass tea india stall steam","indian tea kettle stove street","chai boiling pot india"]},
+  {"id":"bleed-dawn","aspect":"wide","n":6,"max":12,"queries":["india street early morning mist","indian city dawn empty street","varanasi morning fog river"]},
+  {"id":"bleed-auto","aspect":"wide","n":6,"max":12,"queries":["auto rickshaw india street traffic","inside auto rickshaw india","india street traffic rickshaw evening"]},
+  {"id":"bleed-night","aspect":"wide","n":6,"max":12,"queries":["india street night lights people","indian market night vendors","india city night street rain"]},
+  {"id":"faces","aspect":"square","n":10,"max":40,"queries":["indian man portrait street worker","indian woman portrait village work","india worker face portrait","india farmer portrait","indian street vendor portrait","india elderly man portrait","india woman market portrait","india young man worker portrait"]}
+]
