@@ -74,7 +74,8 @@ export default function App() {
     <>
       <Grain />
       <Navigation path={shown.path} />
-      <main>
+      {/* The skip link's target, and the only landmark every route has. */}
+      <main id="main" tabIndex={-1}>
         {/* Keyed on the path, not the key: an in-page anchor must not remount
             the document underneath the reader. */}
         <motion.div

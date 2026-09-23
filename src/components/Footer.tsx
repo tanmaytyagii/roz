@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { NAV, navHref } from '../data/stories'
+import { STATUS_LINE } from '../data/issue'
 import { FRAMES } from '../data/frames.generated'
 import { Wordmark } from './Wordmark'
 import { Link } from './Link'
@@ -47,10 +48,7 @@ export function Footer() {
 
           <div className="col-span-6 sm:col-span-4 lg:col-span-3">
             <p className="u-label mb-4 text-dim">Status</p>
-            <p className="u-mono max-w-[34ch] text-ash">
-              Prototype. The homepage, and one story experience — Raju. The other six days, the site-wide soundscapes,
-              the mosaic, the map and the archive are not built.
-            </p>
+            <p className="u-mono max-w-[34ch] text-ash">{STATUS_LINE}</p>
           </div>
 
           <div className="col-span-12 sm:col-span-5 lg:col-span-4 lg:col-start-6">

@@ -76,6 +76,15 @@ export function useLenis() {
         // whether or not Lenis is the one doing the scrolling.
         const clear = parseFloat(getComputedStyle(target).scrollMarginTop) || 0
         lenis?.scrollTo(target as HTMLElement, { offset: -(clear + 8), duration: 1.5 })
+        // Preventing the default also cancels the browser moving focus into
+        // the fragment, which is the whole point of a skip link. Do it by
+        // hand, and lend the target a tabstop if it has none — otherwise the
+        // reader is scrolled somewhere their keyboard has not gone.
+        const el = target as HTMLElement
+        if (!el.hasAttribute('tabindex') && !el.matches('a[href],button,input,select,textarea,[contenteditable]')) {
+          el.setAttribute('tabindex', '-1')
+        }
+        el.focus({ preventScroll: true })
         history.replaceState(null, '', hash)
       }
       document.addEventListener('click', onClick)

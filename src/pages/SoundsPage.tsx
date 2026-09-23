@@ -4,6 +4,7 @@ import { SOUNDSCAPES, RECORDISTS, TOTAL_SECONDS, type Soundscape } from '../data
 import { Frame, Credit } from '../components/Frame'
 import { ChapterMark } from '../components/ChapterMark'
 import { Link } from '../components/Link'
+import { Elsewhere } from '../components/Elsewhere'
 import { clock, stop, toggle, useAudio, useAudioFrame, useStopOnUnmount } from '../lib/audio'
 import { fade, reveal, rise, uncover } from '../lib/motion'
 
@@ -162,7 +163,7 @@ export function SoundsPage() {
       {/* ── The colophon ───────────────────────────────────────────── */}
       <section data-canvas="paper" className="relative bg-paper text-ink">
         <div className="u-pad py-[clamp(4rem,12vh,8rem)]">
-          <ChapterMark n={3} title="Where the sound came from" className="text-slate" />
+          <ChapterMark n={2} title="Where the sound came from" className="text-slate" />
           <div className="u-grid mt-[clamp(2.5rem,7vh,4.5rem)] gap-y-[clamp(1.5rem,4vh,2.5rem)]">
             <motion.h2
               {...reveal()}
@@ -206,24 +207,12 @@ export function SoundsPage() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-[clamp(1.5rem,4vh,2.5rem)] flex flex-wrap gap-x-6 gap-y-2">
-                <Link
-                  to="/places"
-                  className="u-label text-clay-paper underline-offset-[5px] transition-colors duration-[250ms] hover:underline"
-                >
-                  The places →
-                </Link>
-                <Link
-                  to="/people"
-                  className="u-label text-clay-paper underline-offset-[5px] transition-colors duration-[250ms] hover:underline"
-                >
-                  The people →
-                </Link>
-              </p>
             </motion.div>
           </div>
         </div>
       </section>
+
+      <Elsewhere here="/sounds" />
     </article>
   )
 }

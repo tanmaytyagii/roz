@@ -13,20 +13,14 @@ import { DISSOLVE } from '../lib/motion'
  * inside a story they are a route change followed by an anchor.
  */
 export function Navigation({ path }: { path: string }) {
-  const { settled, hidden, onPaper, progress } = useNavState(path)
+  const { settled, hidden, onPaper, progress, gentle } = useNavState(path)
   const [menu, setMenu] = useState(false)
   const home = path === '/'
   const to = (href: string) => navHref(href, home)
-  // Every document opens on a different first landmark.
-  const skipTo = home
-    ? '#intro'
-    : path === '/people'
-      ? '#people-top'
-      : path === '/places'
-        ? '#places-top'
-        : path === '/sounds'
-          ? '#sounds-top'
-          : '#story-top'
+  // On the homepage, skipping means skipping the hero. Everywhere else it
+  // means the top of the document — `main`, which every route has, including
+  // the one for an address that matches nothing.
+  const skipTo = home ? '#intro' : '#main'
 
   // The overlay owns the page while it is open — including Lenis, which would
   // otherwise keep scrolling the document underneath it.
@@ -71,8 +65,11 @@ export function Navigation({ path }: { path: string }) {
         {/* The bar earns its backdrop only once the hero is behind it. */}
         <div
           aria-hidden
-          className="absolute inset-0 transition-opacity duration-700"
+          className="absolute inset-0 transition-opacity"
           style={{
+            // Slow over a photograph, immediate over type — a title must never
+            // reach the section links before the backdrop does.
+            transitionDuration: gentle ? '700ms' : '180ms',
             opacity: settled && !menu ? 1 : 0,
             background: light
               ? 'linear-gradient(to bottom, rgba(238,229,214,0.94), rgba(238,229,214,0.78) 60%, transparent)'

@@ -9,6 +9,11 @@ export type NavState = {
   onPaper: boolean
   /** 0 → 1 through the document. */
   progress: number
+  /**
+   * True where the document opens on a full-bleed photograph. The backdrop can
+   * arrive slowly over one; over type it has to be there before the title is.
+   */
+  gentle: boolean
 }
 
 /**
@@ -17,7 +22,13 @@ export type NavState = {
  * the page's themed sections whenever the route changes under it.
  */
 export function useNavState(route: string): NavState {
-  const [state, setState] = useState<NavState>({ settled: false, hidden: false, onPaper: false, progress: 0 })
+  const [state, setState] = useState<NavState>({
+    settled: false,
+    hidden: false,
+    onPaper: false,
+    progress: 0,
+    gentle: true,
+  })
 
   useEffect(() => {
     let last = window.scrollY
@@ -28,6 +39,31 @@ export function useNavState(route: string): NavState {
     // crosses it decides the bar's colour. The band is defined in viewport
     // units, so it has to be rebuilt whenever the viewport changes height.
     const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-canvas]'))
+
+    /**
+     * How far down the bar earns its backdrop.
+     *
+     * A document that opens on a full-bleed photograph carries its own
+     * darkening across the top, so the bar can stay bare most of the way down
+     * the first screen and the slate reads as one composition — which is how
+     * the homepage and the story slate were drawn.
+     *
+     * A document that opens on type has nothing behind the bar but flat ink,
+     * and its title runs straight into the section links. Those settle almost
+     * at once. Measured from the opening section rather than listed by route,
+     * so a new document gets the right answer on its own.
+     */
+    let settleAt = window.innerHeight * 0.65
+    const gauge = () => {
+      const opener = document.querySelector('main [data-canvas]')
+      const plate = opener?.querySelector('picture, img')
+      const opensOnPhotograph =
+        !!plate && plate.getBoundingClientRect().top + window.scrollY <= 4
+      settleAt = opensOnPhotograph ? window.innerHeight * 0.65 : 24
+      setState((st) => (st.gentle === opensOnPhotograph ? st : { ...st, gentle: opensOnPhotograph }))
+    }
+    gauge()
+
     let io: IntersectionObserver
     const watch = () => {
       io?.disconnect()
@@ -48,8 +84,8 @@ export function useNavState(route: string): NavState {
       ticking = false
       const y = window.scrollY
       const max = document.documentElement.scrollHeight - window.innerHeight
-      const next: NavState = {
-        settled: y > window.innerHeight * 0.65,
+      const next = {
+        settled: y > settleAt,
         hidden: y > window.innerHeight * 1.1 && y > last + 4,
         onPaper,
         progress: max > 0 ? Math.min(1, y / max) : 0,
@@ -68,6 +104,7 @@ export function useNavState(route: string): NavState {
       requestAnimationFrame(read)
     }
     const onResize = () => {
+      gauge()
       watch()
       onScroll()
     }

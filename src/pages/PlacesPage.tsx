@@ -5,6 +5,7 @@ import { statusOf } from '../data/story'
 import { Frame, Credit } from '../components/Frame'
 import { ChapterMark } from '../components/ChapterMark'
 import { Link } from '../components/Link'
+import { Elsewhere } from '../components/Elsewhere'
 import { IndiaMap } from '../components/places/IndiaMap'
 import { fade, reveal, rise, uncover } from '../lib/motion'
 
@@ -38,7 +39,7 @@ export function PlacesPage() {
     <article>
       {/* ── The slate ───────────────────────────────────────────────── */}
       <section id="places-top" data-canvas="ink" className="relative bg-ink">
-        <div className="u-pad pt-[clamp(6rem,18vh,11rem)] pb-[clamp(2.5rem,8vh,5rem)]">
+        <div className="u-pad pt-[clamp(6rem,18vh,11rem)] pb-[clamp(3rem,9vh,6rem)]">
           <ChapterMark n={1} title="The geography" className="text-ash" />
 
           <div className="u-grid mt-[clamp(2.5rem,8vh,5.5rem)] items-end gap-y-[clamp(1.5rem,4vh,2.5rem)]">
@@ -184,18 +185,12 @@ export function PlacesPage() {
                 a person and nothing else yet. The geography is real. The lives written onto it are not, and the
                 archive says so at length.
               </p>
-              <p className="mt-[clamp(1.5rem,4vh,2.5rem)]">
-                <Link
-                  to="/people"
-                  className="u-label text-clay-paper underline-offset-[5px] transition-colors duration-[250ms] hover:underline"
-                >
-                  The people →
-                </Link>
-              </p>
             </motion.div>
           </div>
         </div>
       </section>
+
+      <Elsewhere here="/places" />
     </article>
   )
 }

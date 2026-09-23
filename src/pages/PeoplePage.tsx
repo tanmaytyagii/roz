@@ -5,6 +5,7 @@ import { statusOf } from '../data/story'
 import { Frame, Credit } from '../components/Frame'
 import { ChapterMark } from '../components/ChapterMark'
 import { Link } from '../components/Link'
+import { Elsewhere } from '../components/Elsewhere'
 import { PeopleIndex, IndexCount } from '../components/people/PeopleIndex'
 import { fade, reveal, rise, uncover } from '../lib/motion'
 
@@ -185,21 +186,12 @@ export function PeoplePage() {
                 </div>
               )}
 
-              <motion.p
-                {...rise(0.12)}
-                className="u-mono col-span-12 self-end text-dim lg:col-span-4 lg:col-start-9 lg:text-right"
-              >
-                <Link
-                  to="/"
-                  className="underline-offset-[4px] transition-colors duration-[250ms] hover:text-cream hover:underline"
-                >
-                  Back to the homepage
-                </Link>
-              </motion.p>
             </div>
           </motion.div>
         </div>
       </section>
+
+      <Elsewhere here="/people" />
     </article>
   )
 }

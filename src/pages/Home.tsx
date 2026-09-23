@@ -2,7 +2,7 @@ import { Hero } from '../components/Hero'
 import { Intro } from '../components/Intro'
 import { Stories } from '../components/Stories'
 import { TheQuestion } from '../components/TheQuestion'
-import { About, InProduction } from '../components/About'
+import { About, Contents } from '../components/About'
 
 /** Chapter one, unchanged. */
 export function Home() {
@@ -13,7 +13,7 @@ export function Home() {
       <Stories />
       <TheQuestion />
       <About />
-      <InProduction />
+      <Contents />
     </>
   )
 }

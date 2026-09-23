@@ -80,6 +80,7 @@ src/
       TheWords     the quotes, on paper
       TheDream     the last frame and the last line
       Archive      the editorial note, the other six days, the way back
+    Elsewhere      the way out of a document and into its siblings
     Link           an anchor that goes through the History API
     Navigation     bar + full-screen menu overlay
     Hero           three-plate dissolve, parallax, the title composition
@@ -87,7 +88,7 @@ src/
     Stories        the seven spreads, sequenced
     StorySpread    BleedSpread / PlateSpread, the two story layouts
     TheQuestion    the one centred composition on the page
-    About          manifesto + the contents page for what is not built
+    About          manifesto + `Contents`, the issue's contents page
     Footer         colophon, credits, prototype disclosure
     Frame          responsive AVIF/WebP with art-directed mobile crops
     Grain          the film layer — grain plate + vignette
@@ -98,6 +99,7 @@ src/
     story.ts                the STORY DOCUMENT shape, the registry, `statusOf`
     places.ts               stories grouped by where they are + one coordinate table
     soundscapes.ts          recordings a story carries + one honest origin line each
+    issue.ts                what the publication holds, counted off the registries
     story-raju.ts           Raju's document — every word of the story
     frames.generated.ts     AUTO-GENERATED image manifest — do not edit
     sounds.generated.ts     AUTO-GENERATED audio manifest — do not edit
@@ -298,7 +300,8 @@ and declares its dimensions. Only the first hero plate is eager; the other two l
 
 ## Not built
 
-The other six days, and the faceted archive that files a day by city, trade, hour and theme. The homepage's contents section lists them. Nothing
+The other six days, and the faceted archive that files a day by city, trade, hour and theme. The
+homepage's contents page lists them under *Not built*, with counts read off the registries. Nothing
 pretends: an entry marked *in production* in `/people` has a photograph and a premise and
 nothing else, pressing it says so instead of opening an empty page, and no half-written
 interview is invented to fill the gap.
