@@ -91,7 +91,7 @@ export function SoundsPage() {
       </section>
 
       {/* ── The archive, first movement ─────────────────────────────── */}
-      <section id="archive" data-canvas="ink" className="relative bg-ink">
+      <section id="archive" data-canvas="ink" className="relative scroll-mt-24 bg-ink">
         <div className="u-pad pb-[clamp(2rem,6vh,3.5rem)]">
           <div className="u-grid items-end gap-y-[clamp(1.25rem,3vh,2rem)]">
             <motion.h2

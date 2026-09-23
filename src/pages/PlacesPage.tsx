@@ -82,7 +82,7 @@ export function PlacesPage() {
       </section>
 
       {/* ── The map, and what is in the place you are on ────────────── */}
-      <section id="map" data-canvas="ink" className="relative bg-ink">
+      <section id="map" data-canvas="ink" className="relative scroll-mt-24 bg-ink">
         <div className="u-pad u-grid items-start gap-y-[clamp(2.5rem,7vh,4rem)] pb-[clamp(4rem,12vh,8rem)]">
           <motion.div {...fade(0, 1.4)} className="col-span-12 lg:col-span-7">
             <IndiaMap

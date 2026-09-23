@@ -70,7 +70,12 @@ export function useLenis() {
         const target = document.querySelector(hash)
         if (!target) return
         e.preventDefault()
-        lenis?.scrollTo(target as HTMLElement, { offset: -8, duration: 1.5 })
+        // Lenis does not read `scroll-margin-top`, and because it owns every
+        // in-page jump the browser never gets to. Honour it here so a section
+        // can keep itself clear of the fixed bar with one CSS property,
+        // whether or not Lenis is the one doing the scrolling.
+        const clear = parseFloat(getComputedStyle(target).scrollMarginTop) || 0
+        lenis?.scrollTo(target as HTMLElement, { offset: -(clear + 8), duration: 1.5 })
         history.replaceState(null, '', hash)
       }
       document.addEventListener('click', onClick)
