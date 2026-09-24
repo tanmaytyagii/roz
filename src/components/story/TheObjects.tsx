@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import type { Artifact, StoryDoc } from '../../data/story'
+import type { Artifact, DayDoc } from '../../data/story'
 import { Frame, Credit } from '../Frame'
 import { ChapterMark } from '../ChapterMark'
 import { reveal, rise, uncover } from '../../lib/motion'
@@ -25,7 +25,7 @@ const ROWS = [
   { plate: 'lg:col-span-3 lg:col-start-2', label: 'lg:col-span-4 lg:col-start-6' },
 ]
 
-export function TheObjects({ doc }: { doc: StoryDoc }) {
+export function TheObjects({ doc }: { doc: DayDoc }) {
   return (
     <section id="the-objects" data-canvas="paper" className="relative bg-paper text-ink">
       <div className="u-pad pt-[clamp(4.5rem,13vh,9rem)] pb-[clamp(3rem,9vh,6rem)]">

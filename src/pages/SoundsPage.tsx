@@ -4,6 +4,7 @@ import { SOUNDSCAPES, RECORDISTS, TOTAL_SECONDS, type Soundscape } from '../data
 import { Frame, Credit } from '../components/Frame'
 import { ChapterMark } from '../components/ChapterMark'
 import { Link } from '../components/Link'
+import { readingFor } from '../data/issue'
 import { Elsewhere } from '../components/Elsewhere'
 import { clock, stop, toggle, useAudio, useAudioFrame, useStopOnUnmount } from '../lib/audio'
 import { fade, reveal, rise, uncover } from '../lib/motion'
@@ -232,6 +233,7 @@ function Row({ scape, n }: { scape: Soundscape; n: number }) {
   const bar = useRef<HTMLSpanElement>(null)
   const time = useRef<HTMLSpanElement>(null)
   const length = Math.round(scape.sound.seconds)
+  const reading = readingFor(scape.story.slug)
 
   useAudioFrame((at, len) => {
     if (bar.current) bar.current.style.transform = `scaleX(${live && len ? at / len : 0})`
@@ -327,12 +329,15 @@ function Row({ scape, n }: { scape: Soundscape; n: number }) {
 
           <p className="u-mono mt-[clamp(0.75rem,2vh,1.25rem)] text-dim">
             <span className="opacity-70">Stands in for {scape.at} in </span>
-            {scape.status === 'available' ? (
+            {reading ? (
+              // Straight to that hour of the document, not the top of it. The
+              // link exists because the document lists this recording — it is
+              // the one relationship here that is not an assumption.
               <Link
-                to={`/story/${scape.story.slug}`}
+                to={`${reading.path}#hour-${scape.at.replace(':', '')}`}
                 className="text-clay-ink underline-offset-[3px] transition-colors duration-[250ms] hover:underline"
               >
-                {scape.story.name}'s day
+                Document {reading.number}, {scape.story.name}'s day
               </Link>
             ) : (
               <span>{scape.story.name}'s day</span>

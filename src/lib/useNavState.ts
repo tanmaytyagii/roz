@@ -86,7 +86,10 @@ export function useNavState(route: string): NavState {
       const max = document.documentElement.scrollHeight - window.innerHeight
       const next = {
         settled: y > settleAt,
-        hidden: y > window.innerHeight * 1.1 && y > last + 4,
+        // A jump of more than a screen in one frame is a landing — a deep
+        // link, a restored position, a chosen hour — not the reader scrolling
+        // down. The bar stays, so they can see which document they are in.
+        hidden: y > window.innerHeight * 1.1 && y > last + 4 && y - last < window.innerHeight,
         onPaper,
         progress: max > 0 ? Math.min(1, y / max) : 0,
       }

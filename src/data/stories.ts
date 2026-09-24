@@ -151,6 +151,39 @@ export const PLACES: { text: string; frame: FrameId; alt: string }[] = [
   { text: 'After everyone goes home.', frame: 'wet-road', alt: 'An empty road at night, streetlights doubled in the wet tarmac.' },
 ]
 
+/**
+ * The photographs the front of the issue uses. Held here rather than inside
+ * the components so the field archive can caption them from the same words,
+ * instead of keeping a second copy that drifts.
+ *
+ * `slate` is written for the prototype — it is a caption, not capture data.
+ */
+export const FRONT_FRAMES: { frame: FrameId; alt: string; where: string; slate?: string }[] = [
+  {
+    frame: 'dawn',
+    alt: 'A man cycles across an open field at sunrise, a city skyline dissolved in haze behind him.',
+    where: 'The cold open',
+    slate: 'Sunrise · Outskirts · 06:14',
+  },
+  {
+    frame: 'kiln',
+    alt: 'Workers resting on a flatbed cart at a brick field under a heavy sky.',
+    where: 'The cold open',
+    slate: 'Brick field · Western U.P. · 17:40',
+  },
+  {
+    frame: 'chai',
+    alt: 'A glass of chai on a stall counter, the vendor out of focus behind it.',
+    where: 'The cold open',
+    slate: 'Chai stall · Mumbai · 07:02',
+  },
+  {
+    frame: 'ghat',
+    alt: 'The ghats at Varanasi seen from the water in early fog, boats moored along the steps, lamps still lit in the buildings above.',
+    where: 'Why ROZ',
+  },
+]
+
 /** §14 — answers to the question. Written, like the rest of the demo cast. */
 export const ANSWERS: { deva: string; gloss: string; who: string }[] = [
   { deva: 'बच्चों की पढ़ाई हो जाए।', gloss: 'That the children finish their studies.', who: 'Mason, 42' },
@@ -160,8 +193,12 @@ export const ANSWERS: { deva: string; gloss: string; who: string }[] = [
   { deva: 'घर वाले खुश रहें।', gloss: 'That the people at home are happy.', who: 'Flower seller, 58' },
 ]
 
+/**
+ * The bar. The issue comes first: it is the contents page, and every document
+ * ends by returning to it.
+ */
 export const NAV = [
-  { label: 'Stories', href: '#stories' },
+  { label: 'Issue', href: '#contents' },
   { label: 'People', href: '/people' },
   { label: 'Places', href: '/places' },
   { label: 'Sounds', href: '/sounds' },

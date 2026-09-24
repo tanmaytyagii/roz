@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { NAV, navHref } from '../data/stories'
+import { READINGS, readingFor } from '../data/issue'
+import { ISSUE } from '../data/relations'
 import { Wordmark } from './Wordmark'
 import { useNavState } from '../lib/useNavState'
 import { lockScroll } from '../lib/useLenis'
@@ -86,6 +88,7 @@ export function Navigation({ path }: { path: string }) {
           >
             <Wordmark />
           </Link>
+          <Whereabouts path={path} shown={settled || menu} />
 
           <ul className="ml-auto hidden items-center gap-[clamp(1.25rem,2.4vw,2.75rem)] lg:flex">
             {NAV.map((item) => (
@@ -146,6 +149,52 @@ export function Navigation({ path }: { path: string }) {
 
       <AnimatePresence>{menu && <Menu home={home} onClose={() => setMenu(false)} />}</AnimatePresence>
     </>
+  )
+}
+
+/**
+ * Where the reader is in the issue, set as small as the bar allows. Inside a
+ * document it is the document's number against how many there are; on one of
+ * the indexes it is just the issue. The front is the issue, so it says nothing.
+ * Either way it is a way back to the contents.
+ *
+ * It waits until the page's own opening has scrolled away: a document already
+ * says which document it is at the top, and saying it twice is noise.
+ */
+function Whereabouts({ path, shown }: { path: string; shown: boolean }) {
+  const slug = /^\/story\/([a-z0-9-]+)$/.exec(path)?.[1]
+  const reading = slug ? readingFor(slug) : undefined
+  const index = ['/people', '/places', '/sounds', '/archive'].includes(path)
+  if (!reading && !index) return null
+
+  return (
+    <Link
+      to="/#contents"
+      // Not while the document's own opening line is on screen saying the
+      // same thing; it takes over once that line has gone.
+      tabIndex={shown ? undefined : -1}
+      aria-hidden={shown ? undefined : true}
+      className={`u-mono -ml-2 flex min-w-0 items-center gap-3 transition-opacity duration-500 ease-[cubic-bezier(.16,1,.3,1)] hover:opacity-100 focus-visible:opacity-100 ${shown ? 'opacity-55' : 'pointer-events-none opacity-0'}`}
+      aria-label={
+        reading
+          ? `Document ${Number(reading.number)} of ${READINGS.length} in Issue ${ISSUE.number}, ${reading.story.name}. Back to the contents.`
+          : `Issue ${ISSUE.number}. Back to the contents.`
+      }
+    >
+      <span aria-hidden className="block h-3 w-px shrink-0 bg-current opacity-40" />
+      {reading ? (
+        <span aria-hidden className="truncate whitespace-nowrap">
+          <span className="hidden sm:inline">Document </span>
+          {reading.number}
+          <span className="opacity-50"> / {String(READINGS.length).padStart(2, '0')}</span>
+          <span className="opacity-70"> · {reading.story.name}</span>
+        </span>
+      ) : (
+        <span aria-hidden className="whitespace-nowrap">
+          Issue {ISSUE.number}
+        </span>
+      )}
+    </Link>
   )
 }
 
@@ -212,7 +261,7 @@ function Menu({ home, onClose }: { home: boolean; onClose: () => void }) {
 }
 
 const DEVA_NAV: Record<string, string> = {
-  Stories: 'कहानियाँ',
+  Issue: 'अंक',
   People: 'लोग',
   Places: 'जगहें',
   Sounds: 'आवाज़ें',

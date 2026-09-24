@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { PLACES_BY_STORY, PLACES_OFF_MAP, findPlace, type Place } from '../data/places'
 import { statusOf } from '../data/story'
+import { readingFor } from '../data/issue'
 import { Frame, Credit } from '../components/Frame'
 import { ChapterMark } from '../components/ChapterMark'
 import { Link } from '../components/Link'
 import { Elsewhere } from '../components/Elsewhere'
+import { ArchiveRelation } from '../components/ArchiveRelation'
 import { IndiaMap } from '../components/places/IndiaMap'
 import { fade, reveal, rise, uncover } from '../lib/motion'
 
@@ -182,8 +184,7 @@ export function PlacesPage() {
               </p>
               <p className="u-mono mt-[clamp(1rem,2.6vh,1.5rem)] max-w-[56ch] text-slate/80">
                 Where a place is marked <span className="text-clay-paper">in production</span>, it has a photograph and
-                a person and nothing else yet. The geography is real. The lives written onto it are not, and the
-                archive says so at length.
+                a person and nothing else yet. The geography is real. The lives written onto it are not.
               </p>
             </motion.div>
           </div>
@@ -215,6 +216,7 @@ function PlacePanel({ place }: { place: Place }) {
       <ul className="mt-[clamp(1.25rem,3vh,2rem)] flex flex-col gap-[clamp(1.25rem,3vh,2rem)]">
         {place.stories.map((s) => {
           const open = statusOf(s.slug) === 'available'
+          const reading = readingFor(s.slug)
           const meta = (
             <>
               <span className="mt-3 block overflow-hidden">
@@ -235,7 +237,7 @@ function PlacePanel({ place }: { place: Place }) {
                   className="u-label"
                   style={{ color: open ? 'var(--color-clay-ink)' : 'var(--color-dim)' }}
                 >
-                  {open ? 'Enter story' : 'In production'}
+                  {open ? 'Enter document' : 'In production'}
                 </span>
                 <span aria-hidden className="relative block h-px w-[clamp(1.5rem,3vw,2.5rem)] overflow-hidden bg-current/25">
                   <span className="absolute inset-0 origin-left scale-x-0 bg-clay transition-transform duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
@@ -247,6 +249,9 @@ function PlacePanel({ place }: { place: Place }) {
 
           const titling = (
             <>
+              {/* Place, then person, then the document they are in — or, where
+                  there is none yet, only the person. */}
+              {reading && <span className="u-mono mb-1 block text-clay-ink">Document {reading.number}</span>}
               <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <span className="u-display text-paper" style={{ fontSize: 'clamp(1.375rem, 2.4vw, 1.875rem)' }}>
                   {s.name}
@@ -266,7 +271,7 @@ function PlacePanel({ place }: { place: Place }) {
                   {titling}
                   {meta}
                   <span className="sr-only">
-                    — {s.name}, {s.occupation}, {s.place}. Story available.
+                    — {s.name}, {s.occupation}, {s.place}. Document {reading?.number}, available.
                   </span>
                 </Link>
               ) : (
@@ -279,6 +284,11 @@ function PlacePanel({ place }: { place: Place }) {
           )
         })}
       </ul>
+
+      {/* What else the publication holds on whoever is in this town. */}
+      <div className="mt-[clamp(1.5rem,4vh,2.5rem)] border-t border-paper/12 pt-[clamp(1rem,2.6vh,1.5rem)]">
+        <ArchiveRelation slug={place.stories[0].slug} omit="place" />
+      </div>
     </div>
   )
 }

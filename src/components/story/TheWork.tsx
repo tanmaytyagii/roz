@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
-import type { Detail, StoryDoc } from '../../data/story'
+import type { Detail, DayDoc } from '../../data/story'
 import { Frame } from '../Frame'
 import { ChapterMark } from '../ChapterMark'
 import { reveal, rise, uncover, usePrefersReducedMotion } from '../../lib/motion'
@@ -29,7 +29,7 @@ const PLACE = [
 /** Different speeds, so nothing in the montage travels with anything else. */
 const DRIFT = [7, -5, 9, -7, 5, -9]
 
-export function TheWork({ doc }: { doc: StoryDoc }) {
+export function TheWork({ doc }: { doc: DayDoc }) {
   return (
     <section id="the-work" data-canvas="ink" className="relative bg-ink">
       <header className="u-pad pt-[clamp(4.5rem,13vh,9rem)] pb-[clamp(2rem,6vh,4rem)]">

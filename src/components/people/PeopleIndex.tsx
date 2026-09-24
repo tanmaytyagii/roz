@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { STORIES, type Story } from '../../data/stories'
 import { statusOf, type StoryStatus } from '../../data/story'
+import { readingFor } from '../../data/issue'
 import { Frame, Credit } from '../Frame'
 import { Link } from '../Link'
 import { DISSOLVE, fade } from '../../lib/motion'
@@ -223,6 +224,7 @@ function PersonRow({
 }) {
   const status: StoryStatus = statusOf(story.slug)
   const open = status === 'available'
+  const reading = readingFor(story.slug)
   const [told, setTold] = useState(false)
 
   const titling = (
@@ -232,7 +234,13 @@ function PersonRow({
           className="u-display transition-colors duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)]"
           style={{
             fontSize: 'clamp(1.75rem, 5.6vw, 4rem)',
-            color: dim ? 'color-mix(in oklab, var(--color-cream) 34%, var(--color-ink))' : 'var(--color-cream)',
+            // A finished day is set in full cream; one in production in ash —
+            // quieter, never greyed out to the point of looking broken.
+            color: dim
+              ? 'color-mix(in oklab, var(--color-cream) 34%, var(--color-ink))'
+              : open
+                ? 'var(--color-cream)'
+                : 'var(--color-ash)',
           }}
         >
           {story.name}
@@ -268,9 +276,24 @@ function PersonRow({
           page number against a chapter. */}
       <span className="col-span-8 flex flex-col justify-center lg:col-span-12 lg:flex-row lg:items-start lg:justify-between lg:gap-[clamp(1.5rem,4vw,4rem)]">
         <span className="flex min-w-0 flex-col">
-          <span className="u-mono mb-1 block text-dim/70 lg:mb-2">{String(story.index).padStart(2, '0')}</span>
+          {/* A finished day is entered by its number in the issue; the rest
+              keep their place in the roster. */}
+          {reading ? (
+            <span className="u-mono mb-1 block text-clay-ink lg:mb-2">Document {reading.number}</span>
+          ) : (
+            <span className="u-mono mb-1 block text-dim/60 lg:mb-2">{String(story.index).padStart(2, '0')}</span>
+          )}
           {titling}
           {open && <span className="u-mono mt-3 block max-w-[46ch] text-ash">{story.line}</span>}
+          {/* Their own sentence. The six unfinished entries have one too, and
+              it is the difference between a person in production and a blank. */}
+          <span
+            lang="hi"
+            className="u-deva mt-3 block max-w-[30ch] border-l border-clay/40 pl-3 text-dim"
+            style={{ fontSize: 'clamp(0.9375rem, 1.4vw, 1.125rem)' }}
+          >
+            {story.quote}
+          </span>
         </span>
 
         <span className="mt-3 flex shrink-0 items-center gap-3 lg:mt-[clamp(1.9rem,3.6vw,3.1rem)]">
@@ -278,7 +301,7 @@ function PersonRow({
             className="u-label transition-colors duration-[300ms]"
             style={{ color: open ? 'var(--color-clay-ink)' : 'var(--color-dim)' }}
           >
-            {open ? 'Enter story' : 'In production'}
+            {open ? 'Enter document' : 'In production'}
           </span>
           <span aria-hidden className="relative block h-px w-[clamp(1.5rem,3vw,2.75rem)] overflow-hidden bg-current/25">
             <span
@@ -305,7 +328,7 @@ function PersonRow({
         <Link to={`/story/${story.slug}`} className={shell}>
           {body}
           <span className="sr-only">
-            — {story.name}, {story.occupation}, {story.place}. Story available. {story.duration}.
+            — {story.name}, {story.occupation}, {story.place}. Document {reading?.number}, available. {story.duration}.
           </span>
         </Link>
       ) : (
@@ -325,9 +348,10 @@ function PersonRow({
                 transition={{ duration: 0.45, ease: DISSOLVE }}
                 className="u-mono overflow-hidden text-clay-ink"
               >
-                <span className="block max-w-[52ch] pb-[clamp(1rem,3vh,1.75rem)]">
-                  Photographed and written. The day itself — the hours, the work, the objects, the words — is still
-                  being assembled.
+                <span className="block max-w-[56ch] pb-[clamp(1rem,3vh,1.75rem)]">
+                  In the archive: one photograph, one premise, one town. Not in it yet: the hours, the work, the
+                  objects, the words. Nothing will be invented to close that gap — the day gets written when it gets
+                  written.
                 </span>
               </motion.p>
             )}

@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
-import type { StoryDoc } from '../../data/story'
+import type { DayDoc } from '../../data/story'
 import { Frame, Credit } from '../Frame'
 import { fade, liftLine, usePrefersReducedMotion } from '../../lib/motion'
 
@@ -12,7 +12,7 @@ import { fade, liftLine, usePrefersReducedMotion } from '../../lib/motion'
  * same device the homepage keeps for its one question, so arriving here reads
  * as a change of address rather than another section.
  */
-export function TheDream({ doc }: { doc: StoryDoc }) {
+export function TheDream({ doc }: { doc: DayDoc }) {
   const ref = useRef<HTMLElement>(null)
   const reduced = usePrefersReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })

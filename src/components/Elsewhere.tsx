@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { DOCUMENTS } from '../data/issue'
+import { ISSUE } from '../data/relations'
 import { Link } from './Link'
 import { fade, rise } from '../lib/motion'
 
@@ -54,10 +55,10 @@ export function Elsewhere({ here }: { here: string }) {
 
           <motion.p {...fade(0.2, 1.2)} className="u-mono mt-[clamp(1.5rem,4vh,2.5rem)] text-dim">
             <Link
-              to="/"
+              to="/#contents"
               className="underline-offset-[4px] transition-colors duration-[250ms] hover:text-cream hover:underline"
             >
-              Back to the front
+              Return to Issue {ISSUE.number}
             </Link>
           </motion.p>
         </motion.div>

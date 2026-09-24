@@ -7,7 +7,7 @@ const browser = await puppeteer.launch({
   headless: 'shell', args: ['--no-sandbox', '--hide-scrollbars'],
 })
 const bad = []
-for (const url of ['http://localhost:5190/', 'http://localhost:5190/people', 'http://localhost:5190/places', 'http://localhost:5190/sounds', 'http://localhost:5190/story/raju']) {
+for (const url of ['http://localhost:5190/', 'http://localhost:5190/people', 'http://localhost:5190/places', 'http://localhost:5190/sounds', 'http://localhost:5190/archive', 'http://localhost:5190/story/raju', 'http://localhost:5190/story/shanti']) {
   for (const [w, h] of [[390, 844], [768, 1024], [1024, 768], [1440, 900]]) {
     const page = await browser.newPage()
     await page.setViewport({ width: w, height: h, isMobile: w < 500, hasTouch: w < 500 })
@@ -59,7 +59,7 @@ for (let i = 0; i < 10; i++) {
 // The primitives hide their content until it enters the viewport. Read each
 // document a screen at a time, top to bottom, and nothing may be left behind.
 for (const [w, h] of [[1440, 900], [390, 844]]) {
-  for (const path of ['/', '/people', '/places', '/sounds', '/story/raju']) {
+  for (const path of ['/', '/people', '/places', '/sounds', '/archive', '/story/raju', '/story/shanti']) {
     const page = await browser.newPage()
     await page.setViewport({ width: w, height: h, isMobile: w < 500, hasTouch: w < 500 })
     await page.goto('http://localhost:5190' + path, { waitUntil: 'networkidle2' })

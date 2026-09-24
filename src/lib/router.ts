@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
-import { setScroll } from './useLenis'
+import { hashTarget, landingFor, setScroll } from './useLenis'
 
 /**
  * The whole router. Pathnames, the History API, one event — no dependency.
@@ -79,11 +79,27 @@ export function useScrollRestoration(key: string) {
   useLayoutEffect(() => {
     const hash = window.location.hash
     let raf = 0
+    let tries = 0
+
     const settle = () => {
-      const target = hash ? document.querySelector(hash) : null
-      if (target) setScroll(window.scrollY + target.getBoundingClientRect().top)
-      else setScroll((history.state as HistoryState)?.y ?? 0)
+      // A document arriving from a lazy chunk is not in the DOM the frame the
+      // route changes, so a deep link — a recording pointing at the hour of
+      // the day it stands in for — would find nothing and fall back to the
+      // top. Wait for the target rather than guess, but not forever: about a
+      // second, then take the remembered position instead.
+      const target = hashTarget(hash)
+      if (target) {
+        setScroll(landingFor(target))
+        return
+      }
+      if (hash && tries < 60) {
+        tries += 1
+        raf = requestAnimationFrame(settle)
+        return
+      }
+      setScroll((history.state as HistoryState)?.y ?? 0)
     }
+
     raf = requestAnimationFrame(() => {
       raf = requestAnimationFrame(settle)
     })

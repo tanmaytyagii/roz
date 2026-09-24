@@ -3,6 +3,8 @@ import { motion } from 'motion/react'
 import { Navigation } from './components/Navigation'
 import { Footer } from './components/Footer'
 import { Grain } from './components/Grain'
+import { DocumentHead, HEAD_ROW } from './components/DocumentNav'
+import { readingFor } from './data/issue'
 import { Home } from './pages/Home'
 
 /**
@@ -15,6 +17,7 @@ const StoryPage = lazy(() => import('./pages/StoryPage').then((m) => ({ default:
 const PeoplePage = lazy(() => import('./pages/PeoplePage').then((m) => ({ default: m.PeoplePage })))
 const PlacesPage = lazy(() => import('./pages/PlacesPage').then((m) => ({ default: m.PlacesPage })))
 const SoundsPage = lazy(() => import('./pages/SoundsPage').then((m) => ({ default: m.SoundsPage })))
+const ArchivePage = lazy(() => import('./pages/ArchivePage').then((m) => ({ default: m.ArchivePage })))
 const NotFound = lazy(() => import('./pages/NotFound').then((m) => ({ default: m.NotFound })))
 import { useLenis } from './lib/useLenis'
 import { useRoute, useScrollRestoration } from './lib/router'
@@ -57,6 +60,7 @@ export default function App() {
       void import('./pages/PlacesPage')
       void import('./pages/SoundsPage')
       void import('./pages/StoryPage')
+      void import('./pages/ArchivePage')
     }
     // requestIdleCallback is still missing on older Safari.
     const idle = 'requestIdleCallback' in window
@@ -69,6 +73,8 @@ export default function App() {
   }, [])
 
   const slug = STORY.exec(shown.path)?.[1]
+  // The document being turned to, if the next page is one.
+  const bound = readingFor(STORY.exec(route.path)?.[1] ?? '')
 
   return (
     <>
@@ -95,6 +101,8 @@ export default function App() {
               <PlacesPage />
             ) : shown.path === '/sounds' ? (
               <SoundsPage />
+            ) : shown.path === '/archive' ? (
+              <ArchivePage />
             ) : (
               <NotFound />
             )}
@@ -104,7 +112,12 @@ export default function App() {
       <Footer />
 
       {/* The dip itself. Opacity on one viewport-sized layer — a page-wide
-          blur would read the same and cost a full-document readback. */}
+          blur would read the same and cost a full-document readback.
+
+          Turning to a document, the dark carries that document's number, set
+          in exactly the place its own opening line sets it: the page comes up
+          under a number that is already there, so the turn reads as entering
+          Document 02 rather than as loading a route. It adds no time. */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 z-[65] bg-ink ease-[cubic-bezier(.65,0,.35,1)]"
@@ -113,7 +126,13 @@ export default function App() {
           transitionProperty: 'opacity',
           transitionDuration: `${dipping ? DIP : RISE}ms`,
         }}
-      />
+      >
+        {bound && (
+          <div className={HEAD_ROW}>
+            <DocumentHead reading={bound} ghost />
+          </div>
+        )}
+      </div>
     </>
   )
 }

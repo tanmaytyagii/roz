@@ -1,9 +1,11 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import type { Story } from '../../data/stories'
-import type { StoryDoc } from '../../data/story'
+import type { Reading } from '../../data/issue'
+import type { DayDoc } from '../../data/story'
 import { Frame, Credit } from '../Frame'
 import { Link } from '../Link'
+import { DocumentHead, Disclosure, HEAD_ROW } from '../DocumentNav'
 import { rise, usePrefersReducedMotion } from '../../lib/motion'
 
 /**
@@ -15,7 +17,7 @@ import { rise, usePrefersReducedMotion } from '../../lib/motion'
  * slate: the name at scale, the particulars stacked under it in a mono column,
  * the line he is known for across the gutter.
  */
-export function Opening({ story, doc }: { story: Story; doc: StoryDoc }) {
+export function Opening({ story, doc, reading }: { story: Story; doc: DayDoc; reading: Reading }) {
   const ref = useRef<HTMLElement>(null)
   const reduced = usePrefersReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -54,27 +56,9 @@ export function Opening({ story, doc }: { story: Story; doc: StoryDoc }) {
         style={{ background: 'linear-gradient(88deg, rgba(10,9,7,0.62) 0%, rgba(10,9,7,0.1) 46%, transparent 68%)' }}
       />
 
-      {/* Top slate: where you are, and the way back. */}
-      <motion.div
-        style={reduced ? undefined : { opacity: chromeFade }}
-        className="u-pad relative mt-[clamp(4.5rem,8vh,6.5rem)] flex flex-wrap items-baseline gap-x-6 gap-y-2"
-      >
-        <Link
-          to="/#stories"
-          className="group u-label inline-flex items-center gap-3 text-paper/70 transition-colors hover:text-paper"
-        >
-          <span aria-hidden className="relative block h-px w-[clamp(1.5rem,4vw,3rem)] overflow-hidden bg-current">
-            <span className="absolute inset-0 origin-right scale-x-0 bg-clay transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
-          </span>
-          All stories
-        </Link>
-        <p className="u-mono ml-auto whitespace-nowrap text-paper/70">
-          <span className="hidden sm:inline">
-            Chapter two <span className="opacity-40">·</span> Story{' '}
-          </span>
-          {String(story.index).padStart(2, '0')}
-          <span className="opacity-55"> / 07</span>
-        </p>
+      {/* Top slate: where you are in the issue, and the way back to it. */}
+      <motion.div style={reduced ? undefined : { opacity: chromeFade }} className={HEAD_ROW}>
+        <DocumentHead reading={reading} />
       </motion.div>
 
       {/* The titling. */}
@@ -161,11 +145,10 @@ export function Opening({ story, doc }: { story: Story; doc: StoryDoc }) {
         style={reduced ? undefined : { opacity: chromeFade }}
         className="u-pad relative flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-paper/12 py-[clamp(0.7rem,1.6vh,1.15rem)]"
       >
-        <p className="u-mono text-paper/60">
-          <span className="text-clay-ink">Demo subject</span>
-          <span className="opacity-40"> · written for the prototype · </span>
+        <Disclosure story={story}>
+          <span className="opacity-40"> · </span>
           <Credit id={doc.cover.frame} />
-        </p>
+        </Disclosure>
         <p className="u-label ml-auto flex items-center gap-3 text-paper/65">
           Scroll
           <span aria-hidden className="relative block h-6 w-px overflow-hidden bg-paper/25">

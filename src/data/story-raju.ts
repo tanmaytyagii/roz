@@ -1,4 +1,4 @@
-import type { StoryDoc } from './story'
+import type { DayDoc } from './story'
 
 /**
  * RAJU — THE MASON. Western Uttar Pradesh.
@@ -12,8 +12,18 @@ import type { StoryDoc } from './story'
  * Real interviews, commissioned photography and signed permissions replace all
  * of it before anything is published.
  */
-export const RAJU: StoryDoc = {
+export const RAJU: DayDoc = {
   slug: 'raju',
+  grammar: 'day',
+  number: 1,
+  title: "Raju's day",
+  premise: 'Fifteen hours, seven of them set down.',
+  note:
+    'Raju is not a real person. The age, the hours, the objects, the words and the dream on this page were all ' +
+    'written for the prototype. The photographs are real, licensed documentary work by the photographers ' +
+    'credited under every frame — the people in them are not the people described here, have not been ' +
+    'interviewed, and have not agreed to any of this. Commissioned photography, actual interviews and signed ' +
+    'permissions replace all of it before ROZ is published.',
 
   cover: {
     frame: 'rj-open',

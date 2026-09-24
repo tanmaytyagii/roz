@@ -1,10 +1,15 @@
 import { useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react'
-import type { Story } from '../data/stories'
+import { STORIES, type Story } from '../data/stories'
 import { isAvailable } from '../data/story'
+import { readingFor } from '../data/issue'
+import { listed } from '../lib/words'
 import { Frame, Credit } from './Frame'
 import { Link } from './Link'
 import { DISSOLVE, rise, uncover, usePrefersReducedMotion } from '../lib/motion'
+
+/** Whose days can be read, for the note on a spread whose day cannot. */
+const finished = STORIES.filter((s) => isAvailable(s.slug)).map((s) => `${s.name}'s`)
 
 const DEVA_NUM = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९']
 const deva = (n: number) =>
@@ -14,31 +19,39 @@ const deva = (n: number) =>
     .map((d) => DEVA_NUM[Number(d)])
     .join('')
 
-/** The same mark either way: a link where the day exists, an admission where it does not. */
+/**
+ * The same mark either way: the way into a document where one exists, and an
+ * honest state where it does not. A finished day is announced by its number
+ * in the issue before it is entered; an unfinished one says so on its face
+ * rather than offering a way in and then admitting there is none.
+ */
 function EnterStory({ story }: { story: Story }) {
   const [told, setTold] = useState(false)
-  const built = isAvailable(story.slug)
+  const reading = readingFor(story.slug)
 
-  const mark = (
-    <>
-      <span className="u-label">Enter story</span>
-      <span aria-hidden className="relative block h-px w-[clamp(2rem,4vw,3.25rem)] overflow-hidden bg-current/35">
-        <span className="absolute inset-0 origin-left scale-x-0 bg-clay transition-transform duration-[900ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
-      </span>
-      <span className="u-mono opacity-45">{story.duration}</span>
-    </>
+  const rule = (
+    <span aria-hidden className="relative block h-px w-[clamp(2rem,4vw,3.25rem)] overflow-hidden bg-current/35">
+      <span className="absolute inset-0 origin-left scale-x-0 bg-clay transition-transform duration-[900ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
+    </span>
   )
 
-  if (built) {
+  if (reading) {
     return (
-      <Link
-        to={`/story/${story.slug}`}
-        className="group inline-flex w-fit items-center gap-3"
-      >
-        {mark}
+      <Link to={reading.path} className="group inline-flex w-fit flex-wrap items-center gap-x-3 gap-y-1">
+        <span className="u-mono text-clay-ink">Document {reading.number}</span>
+        <span className="u-label">Enter document</span>
+        {rule}
+        <span className="u-mono opacity-45">{story.duration}</span>
       </Link>
     )
   }
+
+  const mark = (
+    <>
+      <span className="u-label opacity-70">In production</span>
+      {rule}
+    </>
+  )
 
   return (
     <div className="flex flex-col gap-2">
@@ -59,7 +72,10 @@ function EnterStory({ story }: { story: Story }) {
             transition={{ duration: 0.5, ease: DISSOLVE }}
             className="u-mono overflow-hidden text-clay-ink"
           >
-            This day is still being built. Raju's is the one that is finished.
+            This day is still being built.{' '}
+            {finished.length === 1
+              ? `${finished[0]} is the one that is finished.`
+              : `${listed(finished)} are finished.`}
           </motion.p>
         )}
       </AnimatePresence>

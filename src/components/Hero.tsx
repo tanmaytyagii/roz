@@ -2,26 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import { Frame } from './Frame'
 import { usePrefersReducedMotion } from '../lib/motion'
-import type { FrameId } from '../data/frames.generated'
+import { FRONT_FRAMES } from '../data/stories'
 
 /** The cold open. Three frames, dissolving, the way a documentary starts. */
-const PLATES: { id: FrameId; alt: string; slate: string }[] = [
-  {
-    id: 'dawn',
-    alt: 'A man cycles across an open field at sunrise, a city skyline dissolved in haze behind him.',
-    slate: 'Sunrise · Outskirts · 06:14',
-  },
-  {
-    id: 'kiln',
-    alt: 'Workers resting on a flatbed cart at a brick field under a heavy sky.',
-    slate: 'Brick field · Western U.P. · 17:40',
-  },
-  {
-    id: 'chai',
-    alt: 'A glass of chai on a stall counter, the vendor out of focus behind it.',
-    slate: 'Chai stall · Mumbai · 07:02',
-  },
-]
+const PLATES = FRONT_FRAMES.filter((f) => f.slate)
 
 const HOLD = 7000
 
@@ -91,12 +75,12 @@ export function Hero() {
           if (i > 0 && !rest) return null
           return (
             <div
-              key={p.id}
+              key={p.frame}
               className="absolute inset-0 transition-opacity duration-[2600ms] ease-[cubic-bezier(.65,0,.35,1)]"
               style={{ opacity: (reduced ? 0 : shot) === i ? 1 : 0 }}
             >
               <Frame
-                id={p.id}
+                id={p.frame}
                 alt={i === 0 ? p.alt : ''}
                 priority={i === 0}
                 sizes="100vw"

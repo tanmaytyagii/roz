@@ -5,14 +5,16 @@ import { usePrefersReducedMotion } from '../lib/motion'
  * fixed vignette. Together they are what stops the page reading as a screen —
  * every section sits behind the same emulsion.
  *
- * Both layers are fixed, composited, and never hit-tested.
+ * Both layers are fixed, composited, and never hit-tested. The plate overhangs
+ * the viewport by more than its largest step (9% of its own width), so no
+ * offset ever uncovers a bare strip down one edge.
  */
 export function Grain() {
   const reduced = usePrefersReducedMotion()
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[60]">
       <div
-        className="absolute inset-[-100px] opacity-[0.1] mix-blend-overlay"
+        className="absolute inset-[-15%] opacity-[0.1] mix-blend-overlay"
         style={{
           backgroundImage: 'url(/grain.png)',
           backgroundSize: '128px 128px',

@@ -1,5 +1,5 @@
 import { SOUNDS, type Sound, type SoundId } from './sounds.generated'
-import { STORY_DOCS, statusOf, type StoryStatus } from './story'
+import { DOCS_IN_ORDER, statusOf, tracksOf, type StoryStatus } from './story'
 import { STORIES, type Story } from './stories'
 import type { Track } from './story'
 
@@ -49,10 +49,10 @@ export type Soundscape = {
  * Every recording any story carries, in the order its story tells them.
  * Adding a story with its own tracks extends this on its own.
  */
-export const SOUNDSCAPES: Soundscape[] = Object.values(STORY_DOCS).flatMap((doc) => {
+export const SOUNDSCAPES: Soundscape[] = DOCS_IN_ORDER.flatMap((doc) => {
   const story = STORIES.find((s) => s.slug === doc.slug)
   if (!story) return []
-  return doc.sound.tracks.flatMap((track: Track) => {
+  return tracksOf(doc).flatMap((track: Track) => {
     const sound = SOUNDS[track.id]
     if (!sound) return []
     return [

@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion } from 'motion/react'
-import type { StoryDoc } from '../../data/story'
+import type { DayDoc } from '../../data/story'
 import { SOUNDS } from '../../data/sounds.generated'
 import { ChapterMark } from '../ChapterMark'
 import { toggle, useAudio, useAudioFrame, useStopOnUnmount } from '../../lib/audio'
@@ -21,7 +21,7 @@ const REST = [0.34, 0.62, 0.44]
  * the site. Progress is written straight to the node on rAF; the only state
  * here is which track is live.
  */
-export function TheSound({ doc }: { doc: StoryDoc }) {
+export function TheSound({ doc }: { doc: DayDoc }) {
   const { id: liveId, phase } = useAudio()
   const bars = useRef<Record<string, HTMLSpanElement | null>>({})
   useStopOnUnmount()

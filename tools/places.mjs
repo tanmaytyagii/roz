@@ -94,7 +94,25 @@ const counts = index.map((r) => r.count)
 console.log('  rows         :', index.length, '· counts:', counts.join(' '))
 if (index.length !== 7) problems.push(`the index lists ${index.length} places, not 7`)
 if (counts.some((c) => c !== 1)) problems.push('a location count does not match the story data')
-if (index.filter((r) => r.status === 'Available').length !== 1) problems.push('more than one place claims to be available')
+// Available is a claim about the stories, so check it against them: pin each
+// mark in turn, and a place may say Available only if its panel offers a way
+// into a story that exists — and must say it whenever it does.
+for (const r of index) {
+  await page.evaluate((name) => {
+    const b = [...document.querySelectorAll('#map button[aria-label]')].find((x) => x.getAttribute('aria-label').split('—')[0].trim() === name)
+    b?.click()
+  }, r.name)
+  await wait(400)
+  const links = await page.evaluate(() => [...document.querySelectorAll('#map a[href^="/story/"]')].map((a) => a.getAttribute('href')))
+  if ((r.status === 'Available') !== links.length > 0) problems.push(`${r.name} says ${r.status} but its panel offers ${links.length} story links`)
+}
+console.log('  available    :', index.filter((r) => r.status === 'Available').map((r) => r.name).join(' · '))
+// Leave the panel where the loop below expects to find it.
+await page.evaluate(() => {
+  const b = [...document.querySelectorAll('#map button[aria-label]')].find((x) => x.getAttribute('aria-label').startsWith('Western'))
+  b?.click()
+})
+await wait(500)
 if (index.some((r) => !r.spoken.includes('story'))) problems.push('a row does not announce its story count')
 
 // ── The loop: place → story → place ───────────────────────────────────

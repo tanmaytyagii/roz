@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react'
-import type { Hour, StoryDoc } from '../../data/story'
+import type { Hour, DayDoc } from '../../data/story'
 import { minutesOf, timeOf } from '../../data/story'
 import { Frame } from '../Frame'
 import { ChapterMark } from '../ChapterMark'
@@ -26,7 +26,7 @@ import { DISSOLVE, fade, reveal, rise, uncover, usePrefersReducedMotion } from '
  * screen, `HourSheet` folded into the corner on a narrow one. They share the
  * active chapter, the progress and the jump, and nothing else.
  */
-export function TheDay({ doc }: { doc: StoryDoc }) {
+export function TheDay({ doc }: { doc: DayDoc }) {
   const hours = doc.day
   const items = useRef<(HTMLElement | null)[]>([])
   const clock = useRef<HTMLSpanElement>(null)
@@ -428,6 +428,8 @@ const HourChapter = ({
         ref(el)
       }}
       aria-labelledby={`hour-${hour.time.replace(':', '')}`}
+      // A link to the hour's line lands here, on the whole hour.
+      data-chapter
       className="relative isolate flex h-[100svh] min-h-[32rem] flex-col justify-end overflow-clip"
     >
       {/* The frame comes up like a print in the tray, drifts, and settles out

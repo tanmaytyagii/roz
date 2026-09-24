@@ -1,122 +1,134 @@
 import { motion } from 'motion/react'
 import { STORIES } from '../../data/stories'
-import { isAvailable } from '../../data/story'
-import { Frame } from '../Frame'
+import { IN_PRODUCTION, NEXT_NUMBER, turnFrom, type Reading } from '../../data/issue'
+import { ISSUE } from '../../data/relations'
 import { ChapterMark } from '../ChapterMark'
 import { Link } from '../Link'
-import { fade, reveal, rise, uncover } from '../../lib/motion'
+import { FieldNote } from '../FieldNote'
+import { ArchiveRelation } from '../ArchiveRelation'
+import { DocumentEntry } from '../DocumentNav'
+import { fade, reveal, rise } from '../../lib/motion'
+import { inWords, listed } from '../../lib/words'
 
 /**
- * The way out.
+ * THE END OF A DOCUMENT.
  *
- * The note first, because this is the last place anybody reads before they
- * leave and it is the one thing on the page that is not a performance. Then the
- * other six days, which hand the reader back to the archive on the homepage.
+ * The same four beats after every document, whatever its grammar: the end is
+ * marked, the document's archive is opened, the editor says what comes next in
+ * the issue, and the way back to the issue is the last thing on the page.
  *
- * A story whose document exists links straight to it; the rest return to their
- * spread and say what they are. Adding the next story flips its own plate over
- * without this file changing.
+ * The end line mirrors the line each document opens on — the issue on one
+ * side, the document's number on the other — so a document is bracketed by
+ * the same rule top and bottom.
+ *
+ * What comes next is read from the issue's order, not chosen here: the
+ * document after this one if there is one, the ones before it if not, and then
+ * the number the next finished document will take, which belongs to nobody
+ * yet.
  */
-export function Archive({ slug }: { slug: string }) {
-  const others = STORIES.filter((s) => s.slug !== slug)
+export function Archive({ reading, n }: { reading: Reading; n: number }) {
+  const { story, doc, number } = reading
+  const { next, earlier } = turnFrom(story.slug)
+  const built = STORIES.length - IN_PRODUCTION.length
+  const heading = `end-${story.slug}`
 
   return (
-    <section id="archive" data-canvas="ink" className="relative bg-ink">
-      {/* The note. Quiet, and directly in the path out. */}
+    <section id="archive" data-canvas="ink" aria-labelledby={heading} className="relative bg-ink">
+      {/* The end, marked. */}
       <div className="u-pad pt-[clamp(3.5rem,10vh,7rem)]">
-        <motion.div {...fade()} className="u-grid gap-y-4 border-t border-paper/12 pt-[clamp(1.5rem,4vh,2.5rem)]">
-          <p className="u-label col-span-12 text-clay-ink lg:col-span-3">A note on this story</p>
-          <p className="u-mono col-span-12 max-w-[72ch] text-ash lg:col-span-8 lg:col-start-5">
-            Raju is not a real person. The age, the hours, the objects, the words and the dream on this page were all
-            written for the prototype. The photographs are real, licensed documentary work by the photographers credited
-            under every frame — the people in them are not the people described here, have not been interviewed, and
-            have not agreed to any of this. Commissioned photography, actual interviews and signed permissions replace
-            all of it before ROZ is published.
+        <motion.div
+          {...fade(0, 1.2)}
+          className="flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-paper/20 pt-[clamp(0.9rem,2.2vh,1.4rem)]"
+        >
+          <h2 id={heading} className="u-label text-clay-ink">
+            End of Document {number}
+          </h2>
+          <p lang="hi" className="u-deva text-dim" style={{ fontSize: '0.9375rem' }}>
+            {story.nameDeva}
+          </p>
+          <p className="u-mono ml-auto whitespace-nowrap text-dim">
+            ROZ <span className="opacity-40">/</span> Issue {ISSUE.number}
           </p>
         </motion.div>
       </div>
 
-      <div className="u-pad pt-[clamp(4rem,12vh,8rem)] pb-[clamp(2rem,6vh,4rem)]">
-        <ChapterMark n={6} title="The archive" className="text-ash" />
-        <div className="u-grid mt-[clamp(2rem,6vh,4rem)] gap-y-[clamp(1.25rem,3vh,2rem)]">
-          <motion.h2
-            {...reveal()}
-            className="u-display col-span-12 text-balance lg:col-span-7"
-            style={{ fontSize: 'clamp(2rem, 6vw, 5rem)', lineHeight: 1 }}
-          >
-            One day, of seven.
-          </motion.h2>
-          <motion.p {...rise(0.1)} className="u-mono col-span-12 max-w-[40ch] self-end text-ash lg:col-span-4 lg:col-start-9">
-            Six more are written and photographed. Their days are being assembled in the archive.
-          </motion.p>
+      {/* What the document holds, then what it is not. */}
+      <div className="u-pad pt-[clamp(2.5rem,7vh,4.5rem)]">
+        <div className="u-grid">
+          <div className="col-span-12 lg:col-span-8">
+            <ArchiveRelation slug={story.slug} omit="story" />
+          </div>
+        </div>
+
+        <div className="mt-[clamp(2.5rem,7vh,4.5rem)]">
+          <FieldNote n={1} title="A note on this story">
+            {doc.note}
+          </FieldNote>
         </div>
       </div>
 
-      <ul className="u-pad u-grid gap-y-[clamp(2rem,5vh,3rem)] pb-[clamp(4rem,12vh,8rem)]">
-        {others.map((s, i) => {
-          const built = isAvailable(s.slug)
-          return (
-            <motion.li
-              key={s.slug}
-              {...uncover(i * 0.04)}
-              className="col-span-6 sm:col-span-4 lg:col-span-2"
-            >
-              <Link
-                to={built ? `/story/${s.slug}` : '/people'}
-                className="group block"
-              >
-                <div className="overflow-hidden">
-                  <Frame
-                    id={s.frame}
-                    alt=""
-                    position={s.focus}
-                    sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 16vw"
-                    className="w-full transition-[transform,filter] duration-[700ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-[1.02] group-hover:brightness-[1.04] group-hover:contrast-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                    style={{ aspectRatio: '4 / 5' }}
-                  />
-                </div>
-                <div className="mt-3 flex items-baseline gap-2">
-                  <span aria-hidden className="u-mono text-dim">
-                    {String(s.index).padStart(2, '0')}
-                  </span>
-                  <span className="u-display text-cream transition-colors duration-500 group-hover:text-clay-ink" style={{ fontSize: 'clamp(1.125rem,1.7vw,1.5rem)' }}>
-                    {s.name}
-                  </span>
-                  <span lang="hi" className="u-deva text-dim" style={{ fontSize: '0.875rem' }}>
-                    {s.nameDeva}
-                  </span>
-                </div>
-                <p className="u-mono mt-1 text-dim">
-                  {s.occupation.replace(/^The /, '')}
-                  <span className="opacity-40"> · </span>
-                  {s.place}
-                </p>
-                {/* Recedes rather than hides: without hover — on a phone, or with
-                    reduced motion — this is the only thing that says whether the
-                    day behind the plate exists yet. */}
-                <p className="u-label mt-2 text-clay-ink opacity-55 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100">
-                  {built ? 'Enter story' : 'In production'}
-                </p>
-              </Link>
-            </motion.li>
-          )
-        })}
-      </ul>
+      {/* What the editor puts after it. */}
+      <div className="u-pad pt-[clamp(4rem,12vh,8rem)] pb-[clamp(1.5rem,4vh,2.5rem)]">
+        <ChapterMark n={n} title="In this issue" className="text-ash" />
+        <motion.h2
+          {...reveal()}
+          className="u-display mt-[clamp(2rem,6vh,4rem)] text-balance"
+          style={{ fontSize: 'clamp(2rem, 6vw, 5rem)', lineHeight: 1 }}
+        >
+          {inWords(built, true)} {built === 1 ? 'day' : 'days'}, of {inWords(STORIES.length)}.
+        </motion.h2>
+      </div>
 
+      <ol className="u-pad pb-[clamp(3rem,9vh,6rem)]">
+        {next.map((r, i) => (
+          <DocumentEntry key={r.story.slug} reading={r} label={i === 0 ? 'Next in this issue' : 'Then'} />
+        ))}
+        {earlier.map((r, i) => (
+          <DocumentEntry key={r.story.slug} reading={r} label={i === 0 ? 'Earlier in this issue' : 'And'} />
+        ))}
+        {IN_PRODUCTION.length > 0 && (
+          <motion.li {...rise(0, 16)} className="border-t border-paper/12">
+            <Link to="/people" className="group u-grid items-baseline gap-y-2 py-[clamp(1.5rem,4vh,2.5rem)]">
+              <span className="u-label col-span-12 text-dim lg:col-span-3">Not yet in this issue</span>
+              <span className="col-span-12 lg:col-span-9">
+                <span className="u-mono block text-dim">Document {NEXT_NUMBER}</span>
+                <span
+                  className="u-display mt-2 block text-ash transition-colors duration-500 group-hover:text-cream group-focus-visible:text-cream"
+                  style={{ fontSize: 'clamp(1.5rem, 3.4vw, 2.5rem)' }}
+                >
+                  In production
+                </span>
+                <span className="u-mono mt-3 block max-w-[52ch] text-dim">
+                  {inWords(IN_PRODUCTION.length, true)} people are photographed and written, and none of their
+                  documents is built: {listed(IN_PRODUCTION.map((s) => s.name))}. Nobody has been given this number.
+                </span>
+                <span className="u-label mt-4 inline-flex items-center gap-3 text-dim transition-colors duration-500 group-hover:text-cream group-focus-visible:text-cream">
+                  The people index
+                  <span aria-hidden className="relative block h-px w-[clamp(1.5rem,3vw,2.5rem)] overflow-hidden bg-current/30">
+                    <span className="absolute inset-0 origin-left scale-x-0 bg-clay transition-transform duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
+                  </span>
+                </span>
+              </span>
+            </Link>
+          </motion.li>
+        )}
+      </ol>
+
+      {/* And home to the issue, which is the last thing on the page. */}
       <div className="u-pad pb-[clamp(4rem,12vh,8rem)]">
         <motion.div {...rise()} className="border-t border-paper/12 pt-[clamp(2rem,6vh,4rem)]">
           <Link
-            to="/people"
+            to="/#contents"
             className="group inline-flex flex-wrap items-baseline gap-x-[clamp(1rem,3vw,2.5rem)] gap-y-2"
           >
             <span
               className="u-display text-ash transition-[transform,color] duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-[0.1em] group-hover:text-cream"
               style={{ fontSize: 'clamp(2rem, 7vw, 5.5rem)', lineHeight: 1 }}
             >
-              Back to the archive
+              Return to Issue {ISSUE.number}
             </span>
             <span lang="hi" className="u-deva text-dim" style={{ fontSize: 'clamp(1rem,1.7vw,1.375rem)' }}>
-              कहानियाँ
+              अंक
             </span>
           </Link>
         </motion.div>

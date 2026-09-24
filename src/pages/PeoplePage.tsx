@@ -8,12 +8,13 @@ import { Link } from '../components/Link'
 import { Elsewhere } from '../components/Elsewhere'
 import { PeopleIndex, IndexCount } from '../components/people/PeopleIndex'
 import { fade, reveal, rise, uncover } from '../lib/motion'
+import { inWords } from '../lib/words'
 
 /**
  * PEOPLE — the archive.
  *
  * A contents page for a publication that is mostly still being made. It says
- * so: seven subjects, one of them readable today, and the other six marked
+ * so: seven subjects, those readable today, and the rest marked
  * with what is actually happening to them rather than with a date.
  *
  * Everything on it is read from `STORIES` and the story registry. There is no
@@ -110,7 +111,7 @@ export function PeoplePage() {
             >
               {available.length === STORIES.length
                 ? 'Every day, in full.'
-                : `${available.length === 1 ? 'One day is finished.' : `${available.length} days are finished.`}`}
+                : `${inWords(available.length, true)} ${available.length === 1 ? 'day is' : 'days are'} finished.`}
               <span className="block text-ash">The rest are being assembled.</span>
             </motion.h2>
             <motion.p

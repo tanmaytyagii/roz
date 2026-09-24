@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import type { StoryDoc } from '../../data/story'
+import type { DayDoc, Utterance } from '../../data/story'
 import { ChapterMark } from '../ChapterMark'
 import { fade, reveal, rise } from '../../lib/motion'
 
@@ -13,7 +13,7 @@ import { fade, reveal, rise } from '../../lib/motion'
  */
 const STEP = ['lg:col-start-1', 'lg:col-start-2', 'lg:col-start-3', 'lg:col-start-2', 'lg:col-start-1']
 
-export function TheWords({ doc }: { doc: StoryDoc }) {
+export function TheWords({ doc }: { doc: DayDoc }) {
   return (
     <section id="the-words" data-canvas="paper" className="relative bg-paper text-ink">
       <div className="u-pad pt-[clamp(4.5rem,13vh,9rem)] pb-[clamp(4rem,12vh,8rem)]">
@@ -33,46 +33,60 @@ export function TheWords({ doc }: { doc: StoryDoc }) {
           </motion.p>
         </div>
 
-        <ol className="mt-[clamp(3rem,10vh,7rem)]">
-          {doc.words.map((w, i) => (
-            <motion.li
-              key={w.deva}
-              {...rise(0, 24)}
-              className="u-grid gap-y-[clamp(0.75rem,2vh,1.25rem)] py-[clamp(2rem,6vh,4rem)]"
-            >
-              {i > 0 && (
-                <motion.span
-                  aria-hidden
-                  {...fade(0, 1.2)}
-                  className="col-span-12 mb-[clamp(1.5rem,5vh,3.25rem)] h-px w-[clamp(3rem,10vw,9rem)] bg-ink/20"
-                />
-              )}
-
-              <span aria-hidden className="u-mono col-span-2 text-slate sm:col-span-1">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-
-              <blockquote className={`col-span-10 sm:col-span-11 sm:col-start-2 lg:col-span-8 ${STEP[i % STEP.length]}`}>
-                <p
-                  lang="hi"
-                  className="u-deva text-balance text-ink"
-                  style={{ fontSize: 'clamp(1.375rem, 3.4vw, 2.875rem)', lineHeight: 1.34 }}
-                >
-                  {w.deva}
-                </p>
-                <footer className="mt-[clamp(0.85rem,2vh,1.4rem)]">
-                  <p className="u-lede max-w-[40ch] text-slate">{w.gloss}</p>
-                  <p className="u-label mt-3 text-clay-paper">{w.where}</p>
-                </footer>
-              </blockquote>
-            </motion.li>
-          ))}
-        </ol>
-
-        <motion.p {...fade(0, 1.4)} className="u-mono mt-[clamp(1rem,3vh,2rem)] text-slate/80">
-          Written for the prototype, like the rest of the story.
-        </motion.p>
+        <Transcript words={doc.words} />
       </div>
     </section>
+  )
+}
+
+/**
+ * The transcript itself: each line one column further in than the last, the
+ * Devanagari at size and the English under it as a translation, never a
+ * replacement. Shared by every grammar that carries words, so a document with
+ * three lines sets them exactly as one with five does.
+ */
+export function Transcript({ words }: { words: Utterance[] }) {
+  return (
+    <>
+      <ol className="mt-[clamp(3rem,10vh,7rem)]">
+        {words.map((w, i) => (
+          <motion.li
+            key={w.deva}
+            {...rise(0, 24)}
+            className="u-grid gap-y-[clamp(0.75rem,2vh,1.25rem)] py-[clamp(2rem,6vh,4rem)]"
+          >
+            {i > 0 && (
+              <motion.span
+                aria-hidden
+                {...fade(0, 1.2)}
+                className="col-span-12 mb-[clamp(1.5rem,5vh,3.25rem)] h-px w-[clamp(3rem,10vw,9rem)] bg-ink/20"
+              />
+            )}
+
+            <span aria-hidden className="u-mono col-span-2 text-slate sm:col-span-1">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+
+            <blockquote className={`col-span-10 sm:col-span-11 sm:col-start-2 lg:col-span-8 ${STEP[i % STEP.length]}`}>
+              <p
+                lang="hi"
+                className="u-deva text-balance text-ink"
+                style={{ fontSize: 'clamp(1.375rem, 3.4vw, 2.875rem)', lineHeight: 1.34 }}
+              >
+                {w.deva}
+              </p>
+              <footer className="mt-[clamp(0.85rem,2vh,1.4rem)]">
+                <p className="u-lede max-w-[40ch] text-slate">{w.gloss}</p>
+                <p className="u-label mt-3 text-clay-paper">{w.where}</p>
+              </footer>
+            </blockquote>
+          </motion.li>
+        ))}
+      </ol>
+
+      <motion.p {...fade(0, 1.4)} className="u-mono mt-[clamp(1rem,3vh,2rem)] text-slate/80">
+        Written for the prototype, like the rest of the story.
+      </motion.p>
+    </>
   )
 }
