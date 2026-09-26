@@ -25,7 +25,7 @@ export function PeoplePage() {
 
   useEffect(() => {
     const was = document.title
-    document.title = 'People — रोज़ · ROZ'
+    document.title = 'People — लोग · ROZ'
     return () => {
       document.title = was
     }
@@ -92,7 +92,7 @@ export function PeoplePage() {
           />
           <figcaption className="u-pad absolute inset-x-0 bottom-0 pb-[clamp(0.75rem,2vh,1.25rem)]">
             <p className="u-mono text-paper/60">
-              <span className="text-clay-ink">Seven days, one city at a time.</span>
+              <span className="text-clay-ink">{inWords(STORIES.length, true)} days, one city at a time.</span>
               <span className="opacity-40"> · </span>
               <Credit id="scaffold" />
             </p>
@@ -118,7 +118,7 @@ export function PeoplePage() {
               {...rise(0.1)}
               className="u-mono col-span-12 max-w-[42ch] self-end text-ash lg:col-span-4 lg:col-start-9"
             >
-              A day at a time, in the order they were photographed. Names stay where they are; the plate follows
+              A day at a time, in the order the issue lists them. Names stay where they are; the plate follows
               whoever you are reading.
             </motion.p>
           </div>

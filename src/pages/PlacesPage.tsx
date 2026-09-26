@@ -10,6 +10,7 @@ import { Elsewhere } from '../components/Elsewhere'
 import { ArchiveRelation } from '../components/ArchiveRelation'
 import { IndiaMap } from '../components/places/IndiaMap'
 import { fade, reveal, rise, uncover } from '../lib/motion'
+import { inWords } from '../lib/words'
 
 /**
  * PLACES — where the stories are.
@@ -36,6 +37,7 @@ export function PlacesPage() {
   }, [])
 
   const totalStories = places.reduce((n, p) => n + p.stories.length, 0)
+  const totalDocuments = places.reduce((n, p) => n + p.stories.filter((s) => statusOf(s.slug) === 'available').length, 0)
 
   return (
     <article>
@@ -77,7 +79,9 @@ export function PlacesPage() {
               <motion.p {...fade(0.3, 1.2)} className="u-mono mt-[clamp(0.75rem,2vh,1.25rem)] text-dim">
                 {String(places.length).padStart(2, '0')} places
                 <span className="opacity-40"> · </span>
-                {String(totalStories).padStart(2, '0')} {totalStories === 1 ? 'story' : 'stories'}
+                {String(totalStories).padStart(2, '0')} {totalStories === 1 ? 'subject' : 'subjects'}
+                <span className="opacity-40"> · </span>
+                {String(totalDocuments).padStart(2, '0')} {totalDocuments === 1 ? 'document' : 'documents'}
               </motion.p>
             </div>
           </div>
@@ -96,8 +100,8 @@ export function PlacesPage() {
               onPick={(name) => setPinned((v) => (v === name ? null : name))}
             />
             <p className="u-mono mt-[clamp(1rem,3vh,2rem)] max-w-[44ch] text-dim">
-              Drawn from the coastline, not traced from a survey. Seven marks, one for each place a story has been
-              photographed in.
+              Drawn from the coastline, not traced from a survey. {inWords(places.length, true)} marks, one for each
+              place a story is set in — which is not where its photographs were taken.
             </p>
           </motion.div>
 
@@ -143,13 +147,13 @@ export function PlacesPage() {
               className="u-display col-span-12 text-balance lg:col-span-7"
               style={{ fontSize: 'clamp(1.75rem, 5vw, 4rem)', lineHeight: 1.02 }}
             >
-              Seven towns, so far.
+              {inWords(places.length, true)} towns, so far.
             </motion.h2>
             <motion.p
               {...rise(0.1)}
               className="u-mono col-span-12 max-w-[40ch] self-end text-ash lg:col-span-4 lg:col-start-9"
             >
-              The same list as the map, set as a page. Counts come from the stories themselves.
+              The same list as the map, set as a page. Every count is read from the issue itself.
             </motion.p>
           </div>
 
@@ -179,8 +183,9 @@ export function PlacesPage() {
             <motion.div {...rise(0.1)} className="col-span-12 lg:col-span-5 lg:col-start-8">
               <p className="u-mono max-w-[56ch] text-slate">
                 The drawing on this page is deliberately poor at being a map. It has no state lines, no roads, no
-                district names and no search. It knows seven towns, because ROZ has been to seven towns, and its only
-                job is to take you from a dot to a person and then get out of the way.
+                district names and no search. It knows {inWords(places.length)} towns, because the issue's stories
+                are set in {inWords(places.length)} towns, and its only job is to take you from a dot to a person and
+                then get out of the way.
               </p>
               <p className="u-mono mt-[clamp(1rem,2.6vh,1.5rem)] max-w-[56ch] text-slate/80">
                 Where a place is marked <span className="text-clay-paper">in production</span>, it has a photograph and
@@ -202,15 +207,16 @@ export function PlacesPage() {
  */
 function PlacePanel({ place }: { place: Place }) {
   const n = place.stories.length
+  const docs = place.stories.filter((s) => statusOf(s.slug) === 'available').length
   return (
     <div className="border-t border-paper/15 pt-[clamp(1rem,2.6vh,1.5rem)]">
       <h2 className="u-display text-cream" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', lineHeight: 1.05 }}>
         {place.short}
       </h2>
       <p className="u-mono mt-2 text-dim">
-        {String(n).padStart(2, '0')} {n === 1 ? 'story' : 'stories'}
+        {String(n).padStart(2, '0')} {n === 1 ? 'subject' : 'subjects'}
         <span className="opacity-40"> · </span>
-        {String(n).padStart(2, '0')} {n === 1 ? 'person' : 'people'}
+        {String(docs).padStart(2, '0')} {docs === 1 ? 'document' : 'documents'}
       </p>
 
       <ul className="mt-[clamp(1.25rem,3vh,2rem)] flex flex-col gap-[clamp(1.25rem,3vh,2rem)]">
@@ -230,7 +236,7 @@ function PlacePanel({ place }: { place: Place }) {
                 />
               </span>
               <span className="u-mono mt-3 block max-w-[42ch] text-ash">
-                {open ? s.line : 'The story is still being assembled.'}
+                {open ? s.line : 'A photograph on file and a premise, and nothing more yet.'}
               </span>
               <span className="mt-3 flex items-center gap-3">
                 <span
@@ -341,7 +347,7 @@ function PlaceIndex({ places }: { places: Place[] }) {
                   {String(n).padStart(2, '0')}
                 </span>
                 <span className="sr-only">
-                  {n} {n === 1 ? 'story' : 'stories'}, {open ? 'available to read' : 'in production'}. Go to the map.
+                  {n} {n === 1 ? 'subject' : 'subjects'}, {open ? 'a document to read' : 'in production'}. Go to the map.
                 </span>
               </a>
             </li>

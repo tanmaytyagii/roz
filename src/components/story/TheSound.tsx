@@ -3,8 +3,11 @@ import { motion } from 'motion/react'
 import type { DayDoc } from '../../data/story'
 import { SOUNDS } from '../../data/sounds.generated'
 import { ChapterMark } from '../ChapterMark'
+import { MarginNote } from '../FieldNote'
+import { marginNote } from '../../data/notes'
 import { toggle, useAudio, useAudioFrame, useStopOnUnmount } from '../../lib/audio'
 import { reveal, rise } from '../../lib/motion'
+import { inWords, licence } from '../../lib/words'
 
 /** The meter at rest — uneven, so it reads as a level and not as a bar chart. */
 const REST = [0.34, 0.62, 0.44]
@@ -24,6 +27,8 @@ const REST = [0.34, 0.62, 0.44]
 export function TheSound({ doc }: { doc: DayDoc }) {
   const { id: liveId, phase } = useAudio()
   const bars = useRef<Record<string, HTMLSpanElement | null>>({})
+  const margin = marginNote(doc.slug, 'the-sound')
+  const named = doc.sound.tracks.filter((t) => /india/i.test(SOUNDS[t.id].credit.title)).length
   useStopOnUnmount()
 
   useAudioFrame((at, length) => {
@@ -137,13 +142,14 @@ export function TheSound({ doc }: { doc: DayDoc }) {
         </ul>
 
         <motion.div {...rise(0.1)} className="u-grid mt-[clamp(2rem,6vh,3.5rem)] gap-y-4">
-          <p className="u-mono col-span-12 max-w-[64ch] text-dim lg:col-span-8">
+          <p className="u-mono col-span-12 max-w-[64ch] text-dim lg:col-span-8 lg:row-start-1">
             <span className="text-clay-ink">Stand-in recordings.</span> Licensed under Creative Commons and trimmed to
-            a loop. Two of them name India in the recording's own title; the other two do not say where they were
-            made, and none of them was recorded on this site or in this town. Like the photography, they hold a place
-            until the real location sound exists.
+            a loop. {inWords(named, true)} of them name India in the recording's own title; the other{' '}
+            {inWords(doc.sound.tracks.length - named)} do not say where they were
+            made, and nothing in any of their records places it on this site or in this town. Like the photography,
+            they hold a place until the real location sound exists.
           </p>
-          <ul className="col-span-12 flex flex-wrap items-baseline gap-x-4 gap-y-1 lg:col-span-8">
+          <ul className="col-span-12 flex flex-wrap items-baseline gap-x-4 gap-y-1 lg:col-span-8 lg:row-start-2">
             {doc.sound.tracks.map((track) => {
               const c = SOUNDS[track.id].credit
               return (
@@ -164,12 +170,21 @@ export function TheSound({ doc }: { doc: DayDoc }) {
                     rel="noreferrer noopener"
                     className="underline-offset-[3px] transition-colors hover:text-clay-ink hover:underline"
                   >
-                    {c.license}
+                    {licence(c.license)}
                   </a>
                 </li>
               )
             })}
           </ul>
+          {/* The margin. The editor's note on the first hour, beside the
+              paragraph that says what these recordings are — not in the list,
+              and not between it and the reader. */}
+          {margin && (
+            <MarginNote
+              note={margin}
+              className="col-span-12 mt-[clamp(1.5rem,4vh,2.5rem)] lg:col-span-3 lg:col-start-10 lg:row-span-2 lg:row-start-1 lg:mt-0"
+            />
+          )}
         </motion.div>
       </div>
     </section>

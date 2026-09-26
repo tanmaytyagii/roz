@@ -2,6 +2,7 @@ import { motion } from 'motion/react'
 import type { DayDoc, Utterance } from '../../data/story'
 import { ChapterMark } from '../ChapterMark'
 import { fade, reveal, rise } from '../../lib/motion'
+import { inWords } from '../../lib/words'
 
 /**
  * THE WORDS.
@@ -25,7 +26,7 @@ export function TheWords({ doc }: { doc: DayDoc }) {
             className="u-display col-span-12 text-balance lg:col-span-7"
             style={{ fontSize: 'clamp(2rem, 6vw, 5rem)', lineHeight: 1 }}
           >
-            Five things he said,
+            {inWords(doc.words.length, true)} things he said,
             <span className="block text-slate">between one wall and the next.</span>
           </motion.h2>
           <motion.p {...rise(0.1)} className="u-mono col-span-12 max-w-[36ch] self-end text-slate lg:col-span-4 lg:col-start-9">

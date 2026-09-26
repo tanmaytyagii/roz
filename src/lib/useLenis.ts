@@ -23,7 +23,10 @@ export function setScroll(y: number, smooth = false) {
     instance.resize()
     instance.scrollTo(y, smooth ? { duration: 1.1 } : { immediate: true, force: true })
   } else {
-    window.scrollTo(smooth ? { top: y, behavior: 'smooth' } : { top: y })
+    // `instant`, not the default: the stylesheet sets `scroll-behavior:
+    // smooth` for touch, and without saying so a deep link would scroll
+    // through the whole document on arrival instead of landing.
+    window.scrollTo({ top: y, behavior: smooth ? 'smooth' : 'instant' })
   }
 }
 

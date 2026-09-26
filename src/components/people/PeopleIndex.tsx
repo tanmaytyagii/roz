@@ -3,6 +3,13 @@ import { AnimatePresence, motion } from 'motion/react'
 import { STORIES, type Story } from '../../data/stories'
 import { statusOf, type StoryStatus } from '../../data/story'
 import { readingFor } from '../../data/issue'
+import { openFileFor } from '../../data/unfinished'
+import { listed } from '../../lib/words'
+
+/** How the index names a thing a file holds, in a sentence. */
+const heldPhrase = (label: string) =>
+  ({ Photograph: 'one photograph', Premise: 'a premise', 'A line': 'a line', 'Set in': 'a town' })[label] ??
+  label.toLowerCase()
 import { Frame, Credit } from '../Frame'
 import { Link } from '../Link'
 import { DISSOLVE, fade } from '../../lib/motion'
@@ -225,6 +232,7 @@ function PersonRow({
   const status: StoryStatus = statusOf(story.slug)
   const open = status === 'available'
   const reading = readingFor(story.slug)
+  const file = open ? undefined : openFileFor(story.slug)
   const [told, setTold] = useState(false)
 
   const titling = (
@@ -285,7 +293,7 @@ function PersonRow({
           )}
           {titling}
           {open && <span className="u-mono mt-3 block max-w-[46ch] text-ash">{story.line}</span>}
-          {/* Their own sentence. The six unfinished entries have one too, and
+          {/* Their own sentence. The unfinished entries have one too, and
               it is the difference between a person in production and a blank. */}
           <span
             lang="hi"
@@ -320,7 +328,10 @@ function PersonRow({
   return (
     <div
       ref={register}
-      className="border-t border-paper/12"
+      // An address, so a production sheet can hand the reader back to this
+      // exact person rather than to the top of the index.
+      id={`person-${story.slug}`}
+      className="scroll-mt-24 border-t border-paper/12"
       onMouseEnter={onEnter}
       onFocusCapture={onEnter}
     >
@@ -341,19 +352,32 @@ function PersonRow({
           </button>
           <AnimatePresence initial={false}>
             {told && (
-              <motion.p
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.45, ease: DISSOLVE }}
                 className="u-mono overflow-hidden text-clay-ink"
               >
-                <span className="block max-w-[56ch] pb-[clamp(1rem,3vh,1.75rem)]">
-                  In the archive: one photograph, one premise, one town. Not in it yet: the hours, the work, the
-                  objects, the words. Nothing will be invented to close that gap — the day gets written when it gets
-                  written.
-                </span>
-              </motion.p>
+                {/* Read off the person's open file, so this says exactly what
+                    the production sheet says and cannot drift from it. */}
+                <p className="max-w-[56ch] pb-3">
+                  In the archive:{' '}
+                  {file ? listed(file.held.map((h) => heldPhrase(h.label))) : 'one photograph and a premise'}. Not in it yet:{' '}
+                  {file ? listed(file.absent.map((a) => a.label.toLowerCase())) : 'the rest'}. Nothing will be invented to
+                  close that gap.
+                </p>
+                {file && (
+                  <p className="pb-[clamp(1rem,3vh,1.75rem)]">
+                    <Link
+                      to={`/archive#${file.id}`}
+                      className="inline-block py-1 text-cream underline decoration-current/30 underline-offset-[4px] transition-colors duration-[250ms] hover:text-clay-ink focus-visible:text-clay-ink"
+                    >
+                      {story.name}'s production sheet, in the field archive
+                    </Link>
+                  </p>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
         </>

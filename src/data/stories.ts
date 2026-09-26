@@ -28,6 +28,12 @@ export type Story = {
   layout: 'bleed' | 'plate'
   /** object-position, for frames whose subject sits away from the centre. */
   focus?: string
+  /**
+   * What is visible in the photograph on file — and only that. Never who it
+   * is or where it was taken: the people in these frames are not the people
+   * named here, and a place read off a sign in the picture is not a record.
+   */
+  seen: string
 }
 
 export const STORIES: Story[] = [
@@ -44,6 +50,7 @@ export const STORIES: Story[] = [
     quote: 'शहर रोज़ थोड़ा-थोड़ा बनता है।',
     duration: '04:52',
     frame: 'raju',
+    seen: 'A man in a knitted cap, his face wrapped in cloth below the eyes.',
     layout: 'bleed',
     focus: 'center 34%',
   },
@@ -60,6 +67,7 @@ export const STORIES: Story[] = [
     quote: 'फूल सुबह के होते हैं। शाम तक सब बिक जाना चाहिए।',
     duration: '06:18',
     frame: 'shanti',
+    seen: 'A woman in a pale shawl sits at the corner of a lane behind a tray of marigolds, a wall of posters behind her.',
     layout: 'plate',
   },
   {
@@ -75,6 +83,7 @@ export const STORIES: Story[] = [
     quote: 'सवारी बैठती है, बात करती है, उतर जाती है।',
     duration: '05:44',
     frame: 'imran',
+    seen: 'An auto-rickshaw blurred with speed on a hazy road, a driver and a passenger inside.',
     layout: 'bleed',
     focus: 'center 50%',
   },
@@ -91,6 +100,7 @@ export const STORIES: Story[] = [
     quote: 'नाप याद रह जाता है, चेहरा नहीं।',
     duration: '05:07',
     frame: 'meena',
+    seen: 'A woman in glasses and a patterned sari bent over a sewing machine in lamplight.',
     layout: 'plate',
   },
   {
@@ -106,6 +116,7 @@ export const STORIES: Story[] = [
     quote: 'सबकी चाय अलग होती है। मीठी, कड़क, हल्की।',
     duration: '03:59',
     frame: 'ramesh',
+    seen: 'A man pouring from a kettle behind a counter of plastic jars, in black and white.',
     layout: 'plate',
   },
   {
@@ -121,6 +132,7 @@ export const STORIES: Story[] = [
     quote: 'रात में अस्पताल सच बोलता है।',
     duration: '07:03',
     frame: 'asha',
+    seen: 'Blurred legs walking down a long, polished corridor.',
     layout: 'bleed',
   },
   {
@@ -136,6 +148,7 @@ export const STORIES: Story[] = [
     quote: 'रोज़ वही रास्ता, रोज़ कुछ और।',
     duration: '06:41',
     frame: 'arjun',
+    seen: 'A woman under an umbrella walks past two hand-pulled rickshaws and a parked taxi on a grey street.',
     layout: 'bleed',
     focus: 'center 58%',
   },

@@ -113,7 +113,8 @@ await page.evaluate(() => {
   b?.click()
 })
 await wait(500)
-if (index.some((r) => !r.spoken.includes('story'))) problems.push('a row does not announce its story count')
+// Each row has to say how many people it holds, in words a screen reader speaks.
+if (index.some((r) => !/\b\d+ (subjects?|stor(y|ies))\b/.test(r.spoken))) problems.push('a row does not announce its count')
 
 // ── The loop: place → story → place ───────────────────────────────────
 console.log('\n— the loop —')

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
-import { SOUNDSCAPES, RECORDISTS, TOTAL_SECONDS, type Soundscape } from '../data/soundscapes'
+import { SOUNDSCAPES, RECORDISTS, TOTAL_SECONDS, NAMED_INDIA, DAYS_HEARD, type Soundscape } from '../data/soundscapes'
 import { Frame, Credit } from '../components/Frame'
 import { ChapterMark } from '../components/ChapterMark'
 import { Link } from '../components/Link'
@@ -8,6 +8,7 @@ import { readingFor } from '../data/issue'
 import { Elsewhere } from '../components/Elsewhere'
 import { clock, stop, toggle, useAudio, useAudioFrame, useStopOnUnmount } from '../lib/audio'
 import { fade, reveal, rise, uncover } from '../lib/motion'
+import { inWords, licence } from '../lib/words'
 
 /** The meter at rest — uneven, so it reads as a level and not as a bar chart. */
 const REST = [0.34, 0.62, 0.44]
@@ -101,15 +102,17 @@ export function SoundsPage() {
               className="u-display col-span-12 text-balance lg:col-span-7"
               style={{ fontSize: 'clamp(1.75rem, 5vw, 4rem)', lineHeight: 1.02 }}
             >
-              Four recordings,
-              <span className="block text-ash">standing in for one day.</span>
+              {inWords(SOUNDSCAPES.length, true)} recordings,
+              <span className="block text-ash">
+                standing in for {DAYS_HEARD === 1 ? 'one day' : `${inWords(DAYS_HEARD)} days`}.
+              </span>
             </motion.h2>
             <motion.p
               {...rise(0.1)}
               className="u-mono col-span-12 max-w-[44ch] self-end text-ash lg:col-span-4 lg:col-start-9"
             >
-              None of these was made in the town its story is set in. Each one holds an hour open until the real
-              location sound exists, and each says underneath it where it actually came from.
+              Nothing in their records places any of them in the town its story is set in. Each one holds an hour
+              open until the real location sound exists, and each says underneath it what its record does say.
             </motion.p>
           </div>
 
@@ -180,9 +183,9 @@ export function SoundsPage() {
                 loop for the prototype. They are credited by name and licence below and beside each one.
               </p>
               <p className="u-mono mt-[clamp(1rem,2.6vh,1.5rem)] max-w-[56ch] text-slate/80">
-                Two of the four name India in the recording's own title. The other two do not say where they were
-                made. <span className="text-clay-paper">None of them was recorded in any of the towns ROZ has a story
-                in</span> — the archive says what each one actually is instead of giving it a location it has not
+                {inWords(NAMED_INDIA, true)} of the {inWords(SOUNDSCAPES.length)} name India in the recording's own
+                title. The other {inWords(SOUNDSCAPES.length - NAMED_INDIA)} do not say where they were made. <span className="text-clay-paper">Nothing in their records places any of them in a town ROZ has a story
+                in</span> — so the archive says what each one actually is instead of giving it a location it has not
                 earned.
               </p>
               <ul className="mt-[clamp(1.5rem,4vh,2.5rem)] flex flex-col gap-2">
@@ -203,7 +206,7 @@ export function SoundsPage() {
                       rel="noreferrer noopener"
                       className="underline-offset-[3px] transition-colors duration-[250ms] hover:text-clay-paper hover:underline"
                     >
-                      {c.license}
+                      {licence(c.license)}
                     </a>
                   </li>
                 ))}
@@ -385,7 +388,7 @@ function SoundCredit({ scape }: { scape: Soundscape }) {
         rel="noreferrer noopener"
         className="underline-offset-[3px] transition-colors duration-[250ms] hover:text-clay-ink hover:underline"
       >
-        {c.license}
+        {licence(c.license)}
       </a>
       <span className="opacity-40"> · </span>
       <span className="opacity-70">{c.title}</span>

@@ -41,7 +41,9 @@ export function ArchiveRelation({
         In the archive
       </motion.p>
 
-      <ul className="mt-[clamp(0.75rem,2vh,1.25rem)]">
+      {/* Sized against its own width, not the screen's: the same index sits in
+          the narrow panel beside the map and across the end of a document. */}
+      <ul className="@container mt-[clamp(0.75rem,2vh,1.25rem)]">
         {omit !== 'story' && (
           <Row label="Document" rule={rule} muted={muted}>
             {reading ? (
@@ -131,8 +133,8 @@ function Row({
 }) {
   return (
     <li className={`u-grid items-baseline gap-y-1 border-t ${rule} py-[clamp(0.6rem,1.6vh,1rem)]`}>
-      <span className={`u-label col-span-12 ${muted} sm:col-span-3`}>{label}</span>
-      <span className="col-span-12 sm:col-span-9">{children}</span>
+      <span className={`u-label col-span-12 ${muted} @sm:col-span-3`}>{label}</span>
+      <span className="col-span-12 @sm:col-span-9">{children}</span>
     </li>
   )
 }

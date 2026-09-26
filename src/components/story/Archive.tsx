@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { STORIES } from '../../data/stories'
-import { IN_PRODUCTION, NEXT_NUMBER, turnFrom, type Reading } from '../../data/issue'
-import { ISSUE } from '../../data/relations'
+import { IN_PRODUCTION, NEXT_NUMBER, factsFor, turnFrom, type Reading } from '../../data/issue'
+import { ISSUE, tally } from '../../data/relations'
 import { ChapterMark } from '../ChapterMark'
 import { Link } from '../Link'
 import { FieldNote } from '../FieldNote'
@@ -29,6 +29,7 @@ import { inWords, listed } from '../../lib/words'
 export function Archive({ reading, n }: { reading: Reading; n: number }) {
   const { story, doc, number } = reading
   const { next, earlier } = turnFrom(story.slug)
+  const facts = factsFor(story.slug)
   const built = STORIES.length - IN_PRODUCTION.length
   const heading = `end-${story.slug}`
 
@@ -57,6 +58,35 @@ export function Archive({ reading, n }: { reading: Reading; n: number }) {
         <div className="u-grid">
           <div className="col-span-12 lg:col-span-8">
             <ArchiveRelation slug={story.slug} omit="story" />
+            {/* And where the rest of it is kept: the sheets its photographs
+                are filed on at the back of the issue, and the notes on them. */}
+            {(facts.filed.length > 0 || facts.notes.length > 0) && (
+              <motion.div
+                {...fade()}
+                className="u-grid items-baseline gap-y-1 border-t border-paper/12 py-[clamp(0.6rem,1.6vh,1rem)]"
+              >
+                <span className="u-label col-span-12 text-dim sm:col-span-3">In the back matter</span>
+                <span className="col-span-12 flex flex-wrap items-baseline gap-x-4 gap-y-1 sm:col-span-9">
+                  {facts.filed.map((f) => (
+                    <Link
+                      key={f.id}
+                      to={`/archive#${f.id}`}
+                      className="u-mono text-cream underline-offset-[3px] transition-colors duration-[250ms] hover:text-clay-ink hover:underline"
+                    >
+                      {f.title} <span className="text-dim">{tally(f.plates)}</span>
+                    </Link>
+                  ))}
+                  {facts.notes.length > 0 && (
+                    <Link
+                      to="/archive#field-notes"
+                      className="u-mono text-cream underline-offset-[3px] transition-colors duration-[250ms] hover:text-clay-ink hover:underline"
+                    >
+                      Field notes <span className="text-dim">{tally(facts.notes.length)}</span>
+                    </Link>
+                  )}
+                </span>
+              </motion.div>
+            )}
           </div>
         </div>
 
@@ -88,7 +118,7 @@ export function Archive({ reading, n }: { reading: Reading; n: number }) {
         ))}
         {IN_PRODUCTION.length > 0 && (
           <motion.li {...rise(0, 16)} className="border-t border-paper/12">
-            <Link to="/people" className="group u-grid items-baseline gap-y-2 py-[clamp(1.5rem,4vh,2.5rem)]">
+            <Link to="/archive#unfinished" className="group u-grid items-baseline gap-y-2 py-[clamp(1.5rem,4vh,2.5rem)]">
               <span className="u-label col-span-12 text-dim lg:col-span-3">Not yet in this issue</span>
               <span className="col-span-12 lg:col-span-9">
                 <span className="u-mono block text-dim">Document {NEXT_NUMBER}</span>
@@ -99,11 +129,12 @@ export function Archive({ reading, n }: { reading: Reading; n: number }) {
                   In production
                 </span>
                 <span className="u-mono mt-3 block max-w-[52ch] text-dim">
-                  {inWords(IN_PRODUCTION.length, true)} people are photographed and written, and none of their
-                  documents is built: {listed(IN_PRODUCTION.map((s) => s.name))}. Nobody has been given this number.
+                  {inWords(IN_PRODUCTION.length, true)} people have a photograph on file and a premise, and none of
+                  their documents is built: {listed(IN_PRODUCTION.map((s) => s.name))}. Nobody has been given this
+                  number.
                 </span>
                 <span className="u-label mt-4 inline-flex items-center gap-3 text-dim transition-colors duration-500 group-hover:text-cream group-focus-visible:text-cream">
-                  The people index
+                  The unfinished documents
                   <span aria-hidden className="relative block h-px w-[clamp(1.5rem,3vw,2.5rem)] overflow-hidden bg-current/30">
                     <span className="absolute inset-0 origin-left scale-x-0 bg-clay transition-transform duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
                   </span>

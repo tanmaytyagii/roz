@@ -4,6 +4,7 @@ import { Navigation } from './components/Navigation'
 import { Footer } from './components/Footer'
 import { Grain } from './components/Grain'
 import { DocumentHead, HEAD_ROW } from './components/DocumentNav'
+import { RunningHead } from './components/RunningHead'
 import { readingFor } from './data/issue'
 import { Home } from './pages/Home'
 
@@ -73,8 +74,10 @@ export default function App() {
   }, [])
 
   const slug = STORY.exec(shown.path)?.[1]
-  // The document being turned to, if the next page is one.
+  // The document being turned to, if the next page is one — or the contents,
+  // when the reader is going back to the issue.
   const bound = readingFor(STORY.exec(route.path)?.[1] ?? '')
+  const toIssue = route.path === '/' && route.hash === '#contents'
 
   return (
     <>
@@ -114,10 +117,12 @@ export default function App() {
       {/* The dip itself. Opacity on one viewport-sized layer — a page-wide
           blur would read the same and cost a full-document readback.
 
-          Turning to a document, the dark carries that document's number, set
-          in exactly the place its own opening line sets it: the page comes up
-          under a number that is already there, so the turn reads as entering
-          Document 02 rather than as loading a route. It adds no time. */}
+          Turning to a document, the dark carries that document's opening
+          line — the issue it is in, and its number — set in exactly the place
+          the page sets it: the page comes up under words that are already
+          there, so the turn reads as entering Document 02 of Issue 01 rather
+          than as loading a route. Going back to the contents it carries the
+          issue's running head the same way. It adds no time. */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 z-[65] bg-ink ease-[cubic-bezier(.65,0,.35,1)]"
@@ -132,6 +137,7 @@ export default function App() {
             <DocumentHead reading={bound} ghost />
           </div>
         )}
+        {toIssue && <RunningHead where="Contents" ghost />}
       </div>
     </>
   )

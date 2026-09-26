@@ -2,12 +2,25 @@ import { motion } from 'motion/react'
 import { ChapterMark } from './ChapterMark'
 import { Frame } from './Frame'
 import { FRONT_FRAMES, STORIES } from '../data/stories'
-import { DOCUMENTS, INDEXES, IN_PRODUCTION, MASTHEAD, READABLE, READINGS, UNBUILT } from '../data/issue'
+import {
+  BACK_MATTER,
+  DOCUMENTS,
+  FRONT_MATTER,
+  INDEXES,
+  IN_PRODUCTION,
+  READABLE,
+  READINGS,
+  UNBUILT,
+  factsFor,
+} from '../data/issue'
+import { SHEETS } from '../data/archive'
 import { ISSUE, tally } from '../data/relations'
 import { Link } from './Link'
 import { DocumentEntry } from './DocumentNav'
+import { RunningHead } from './RunningHead'
+import { Wordmark } from './Wordmark'
 import { fade, liftLine, reveal, rise, uncover } from '../lib/motion'
-import { inWords } from '../lib/words'
+import { inWords, listed } from '../lib/words'
 
 const GHAT = FRONT_FRAMES.find((f) => f.frame === 'ghat')!
 
@@ -63,171 +76,211 @@ export function About() {
 /**
  * THE ISSUE.
  *
- * The contents page, and the hub every document returns to. It is set the way
- * a printed issue sets its contents: the masthead and what the issue holds,
- * counted; then the documents, which are what a reader came for; then the
- * indexes that lead into them; then, plainly, what is not finished. Every
- * number is counted off the registries, so none of it can drift out of date.
+ * The contents page, and the hub every document returns to — set as the front
+ * of a printed issue rather than as the end of a web page. A running head, a
+ * cover (the masthead, the issue, the line the publication is known by), a
+ * little front matter saying what the issue holds, and then the contents
+ * proper: the documents, the indexes, the back matter, and what is not
+ * finished. Every number is counted off the registries.
  *
  * The unfinished half stays on the page. It is set quieter — ash rather than
- * cream, no photograph, no way in — but in full, by name, so it reads as work
- * in progress rather than as something missing.
+ * cream, no photograph, no number, no way in — but in full, by name, so it
+ * reads as a list of entries still being made rather than as something broken.
  */
 export function Contents() {
   const filing = UNBUILT.find((u) => u.title === 'Filing')
+  const archive = INDEXES.find((d) => d.id === 'archive')
+  const indexes = INDEXES.filter((d) => d.id !== 'archive')
+  const f = FRONT_MATTER
+  const sheets = BACK_MATTER.filter((p) => SHEETS.some((s) => s.id === p.id)).length
+  const parts = listed([
+    `${inWords(sheets)} proof sheets`,
+    ...BACK_MATTER.filter((p) => !SHEETS.some((s) => s.id === p.id)).map((p) =>
+      p.id === 'colophon' ? 'the colophon' : p.title.toLowerCase(),
+    ),
+  ])
 
   return (
-    <section id="contents" data-canvas="ink" aria-labelledby="issue-heading" className="bg-ink">
-      {/* The masthead. */}
-      <div className="u-pad pt-[clamp(4.5rem,13vh,9rem)] pb-[clamp(2.5rem,7vh,4.5rem)]">
-        <ChapterMark n={5} title={`Issue ${ISSUE.number}`} className="text-ash" />
-        <div className="u-grid mt-[clamp(2rem,6vh,4.5rem)] items-end gap-y-[clamp(1.25rem,3vh,2rem)]">
+    // `flow-root`, so the running head's top margin stays inside the page it
+    // heads: a reader sent to the contents lands with the head clear of the bar.
+    <section id="contents" data-canvas="ink" aria-labelledby="issue-heading" className="flow-root bg-ink">
+      <RunningHead where="Contents" />
+
+      {/* The cover. */}
+      <div className="u-pad pt-[clamp(3rem,9vh,6rem)] pb-[clamp(3rem,9vh,5.5rem)]">
+        <ChapterMark n={5} title="Contents" className="text-ash" />
+        <div className="u-grid mt-[clamp(2.5rem,8vh,5rem)] items-end gap-y-[clamp(2rem,6vh,3.5rem)]">
           <h2 id="issue-heading" className="col-span-12 lg:col-span-7">
-            <motion.span
-              {...reveal()}
-              className="u-display block text-paper"
-              style={{ fontSize: 'clamp(2.75rem, 9vw, 7.5rem)', lineHeight: 0.92 }}
-            >
-              ROZ, Issue {ISSUE.number}.
+            <span className="sr-only">ROZ, Issue {ISSUE.number} — contents</span>
+            <motion.span {...reveal()} aria-hidden className="block text-paper">
+              <Wordmark size="lg" />
             </motion.span>
             <motion.span
               {...reveal(0.08)}
-              className="u-display mt-[0.12em] block text-ash"
-              style={{ fontSize: 'clamp(1.75rem, 5vw, 4rem)', lineHeight: 1.02 }}
+              aria-hidden
+              className="mt-[clamp(1rem,3vh,1.75rem)] flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-paper/20 pt-[clamp(0.9rem,2.4vh,1.4rem)]"
             >
-              What is in here.
+              <span className="u-display text-cream" style={{ fontSize: 'clamp(2rem, 5.4vw, 4.5rem)', lineHeight: 1 }}>
+                Issue {ISSUE.number}
+              </span>
+              <span lang="hi" className="u-deva text-ash" style={{ fontSize: 'clamp(1.125rem, 2.4vw, 1.875rem)' }}>
+                अंक {toDeva(ISSUE.number)}
+              </span>
             </motion.span>
           </h2>
+          <motion.div {...rise(0.12)} className="col-span-12 lg:col-span-4 lg:col-start-9">
+            <p lang="hi" className="u-deva text-clay-ink" style={{ fontSize: 'clamp(1.125rem, 2vw, 1.625rem)' }}>
+              हर दिन की एक कहानी।
+            </p>
+            <p className="u-label mt-3 text-dim">Stories from the India you don't see.</p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* The front matter: what the issue is, before what is in it. */}
+      <div className="u-pad pb-[clamp(3.5rem,10vh,6.5rem)]">
+        <div className="u-grid gap-y-[clamp(1.25rem,3vh,2rem)] border-t border-paper/12 pt-[clamp(1.5rem,4vh,2.5rem)]">
+          <p className="u-label col-span-12 text-dim lg:col-span-3">Front matter</p>
+          <motion.p
+            {...rise()}
+            className="u-display col-span-12 text-balance lg:col-span-5 lg:col-start-4"
+            style={{ fontSize: 'clamp(1.625rem, 3.2vw, 2.75rem)', lineHeight: 1.06 }}
+          >
+            <span className="block text-cream">
+              {inWords(f.readable, true)} {f.readable === 1 ? 'document' : 'documents'} to read.
+            </span>
+            {f.unfinished > 0 && (
+              <span className="block text-ash">
+                {inWords(f.unfinished, true)} {f.unfinished === 1 ? 'is' : 'are'} still being made.
+              </span>
+            )}
+          </motion.p>
+          <motion.dl
+            {...fade(0.15, 1.2)}
+            className="col-span-12 grid grid-cols-2 gap-x-6 sm:grid-cols-3 lg:col-span-3 lg:col-start-10 lg:row-span-2 lg:grid-cols-1"
+          >
+            {(
+              [
+                ['Photographs', f.photographs],
+                ['Recordings', f.recordings],
+                ['Field notes', f.notes],
+                ['Fragments', f.fragments],
+                ['Subjects', f.subjects],
+                ['Places', f.places],
+              ] as const
+            ).map(([label, n]) => (
+              <div key={label} className="flex items-baseline justify-between gap-3 border-b border-paper/10 py-[0.45rem]">
+                <dt className="u-label text-dim">{label}</dt>
+                <dd className="u-mono text-clay-ink">{tally(n)}</dd>
+              </div>
+            ))}
+          </motion.dl>
           <motion.p
             {...rise(0.1)}
-            className="u-mono col-span-12 max-w-[42ch] self-end text-dim lg:col-span-4 lg:col-start-9"
+            className="u-mono col-span-12 max-w-[52ch] text-dim lg:col-span-5 lg:col-start-4"
           >
-            {inWords(DOCUMENTS.length, true)} documents so far, {inWords(READABLE)} of them{' '}
-            {READABLE === 1 ? 'a story' : 'stories'} you can read all the way through. The rest is photographed and
-            written but not built, and is listed as such.
+            {inWords(DOCUMENTS.length, true)} documents in all, {inWords(READABLE)} of them{' '}
+            {READABLE === 1 ? 'a story' : 'stories'} you can read all the way through. What the documents were made from —
+            and what never became a chapter — is kept at the back, in the{' '}
+            <Link
+              to="/archive"
+              className="text-ash underline decoration-paper/25 underline-offset-[4px] transition-colors duration-[250ms] hover:text-cream hover:decoration-current"
+            >
+              field archive
+            </Link>
+            .
           </motion.p>
         </div>
-
-        {/* The issue in six numbers, counted. */}
-        <motion.dl
-          {...fade(0.2, 1.2)}
-          className="mt-[clamp(2rem,6vh,3.5rem)] flex flex-wrap gap-x-[clamp(1.5rem,4vw,3.5rem)] gap-y-3 border-t border-paper/12 pt-[clamp(1rem,2.6vh,1.5rem)]"
-        >
-          {MASTHEAD.map((m) => (
-            <div key={m.label} className="flex items-baseline gap-2">
-              <dt className="sr-only">{m.label}</dt>
-              <dd className="u-mono text-clay-ink" style={{ fontSize: 'clamp(0.875rem,1.2vw,1.0625rem)' }}>
-                {tally(m.count)}
-              </dd>
-              <dd className="u-label text-dim">{m.label}</dd>
-            </div>
-          ))}
-        </motion.dl>
       </div>
 
-      {/* The documents. What a reader came for, so they come first and largest. */}
-      <div className="u-pad">
-        <motion.h3 {...fade()} className="u-label text-dim">
-          Documents
-        </motion.h3>
-      </div>
+      {/* ── The contents proper ─────────────────────────────────────────── */}
+
+      <Group label="Documents" tally={`${tally(READINGS.length)} to read`} />
       <ol className="u-pad mt-[clamp(1rem,2.6vh,1.5rem)]">
         {READINGS.map((r) => (
-          <DocumentEntry key={r.story.slug} reading={r} />
+          <DocumentEntry key={r.story.slug} reading={r} facts={factsFor(r.story.slug)} />
         ))}
       </ol>
 
-      {/* The indexes. Every way into the documents, set smaller. */}
-      <div className="u-pad pt-[clamp(3rem,9vh,6rem)]">
-        <motion.h3 {...fade()} className="u-label text-dim">
-          Indexes
-        </motion.h3>
-      </div>
+      <Group label="Indexes" />
       <ul className="u-pad mt-[clamp(1rem,2.6vh,1.5rem)]">
-        {INDEXES.map((d, i) => (
-          <motion.li key={d.id} {...rise(i * 0.05, 18)} className="border-t border-paper/10 last:border-b">
-            <Link to={d.path} className="group u-grid items-baseline gap-y-2 py-[clamp(1rem,2.8vh,1.75rem)]">
-              <span className="col-span-12 flex flex-wrap items-baseline gap-x-[0.5em] gap-y-1 sm:col-span-5 lg:col-span-4 lg:col-start-4">
-                <span
-                  className="u-display text-cream transition-[transform,color] duration-[500ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-[0.06em] group-hover:text-clay-ink group-focus-visible:text-clay-ink"
-                  style={{ fontSize: 'clamp(1.375rem, 2.8vw, 2.25rem)' }}
-                >
-                  {d.title}
-                </span>
-                <span lang="hi" className="u-deva text-dim" style={{ fontSize: 'clamp(0.875rem, 1.4vw, 1.0625rem)' }}>
-                  {d.deva}
-                </span>
-              </span>
-              <span className="u-mono col-span-12 max-w-[44ch] text-dim sm:col-span-5 sm:col-start-6 lg:col-span-3 lg:col-start-8">
-                {d.line}
-              </span>
-              <span className="u-mono col-span-12 text-dim/70 sm:col-span-2 sm:col-start-11 sm:text-right">
-                {d.tally}
-              </span>
-            </Link>
-          </motion.li>
+        {indexes.map((d, i) => (
+          <Entry key={d.id} to={d.path} title={d.title} deva={d.deva} line={d.line} tally={d.tally} delay={i * 0.05} />
         ))}
       </ul>
 
-      {/* And what is not finished, by name, said plainly rather than promised. */}
-      <div className="u-pad pt-[clamp(3rem,9vh,6rem)] pb-[clamp(1rem,3vh,2rem)]">
-        <motion.div {...fade()} className="u-grid items-baseline gap-y-2">
-          <h3 className="u-label col-span-12 text-dim lg:col-span-3">Not yet in this issue</h3>
-          <p className="u-mono col-span-12 max-w-[52ch] text-dim lg:col-span-6 lg:col-start-4">
-            Photographed and written, with a premise and a place. Their documents are not built, and nothing will be
-            invented to close that gap.
-          </p>
-          <p className="u-mono col-span-12 text-dim/70 lg:col-span-2 lg:col-start-11 lg:text-right">
-            {tally(IN_PRODUCTION.length)} in production
-          </p>
-        </motion.div>
-      </div>
-      <ul className="u-pad">
+      {archive && (
+        <>
+          <Group label="Back matter" />
+          <ul className="u-pad mt-[clamp(1rem,2.6vh,1.5rem)]">
+            <Entry
+              to={archive.path}
+              title={archive.title}
+              deva={archive.deva}
+              line={`${archive.line} ${parts.charAt(0).toUpperCase()}${parts.slice(1)}.`}
+              tally={archive.tally}
+            />
+          </ul>
+        </>
+      )}
+
+      <Group
+        label="Not yet in this issue"
+        note="Each has a photograph on file, a premise and a town — and nothing more. Their documents stay open rather than be invented; what each one holds, and what it does not, is filed at the back."
+        tally={`${tally(IN_PRODUCTION.length)} in production`}
+      />
+      <ul className="u-pad mt-[clamp(1rem,2.6vh,1.5rem)]">
         {IN_PRODUCTION.map((s, i) => (
           <motion.li key={s.slug} {...rise(i * 0.04, 12)} className="border-t border-paper/10">
-            <div className="u-grid items-baseline gap-y-1 py-[clamp(0.75rem,2vh,1.1rem)]">
-              <span aria-hidden className="u-mono col-span-2 text-dim/60 sm:col-span-1 lg:col-start-4">
-                {tally(s.index)}
-              </span>
-              <span className="col-span-10 flex flex-wrap items-baseline gap-x-3 sm:col-span-4 lg:col-span-3">
-                <span className="u-display text-ash" style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.75rem)' }}>
+            {/* A real destination now exists — the person's production sheet in
+                the back matter — so the entry leads there, and nowhere else. */}
+            <Link
+              to={`/archive#unfinished/${s.slug}`}
+              aria-label={`${s.name}, ${s.occupation.replace(/^The /, '')}, ${s.place}: in production. The production sheet, in the back matter.`}
+              className="group u-grid items-baseline py-[clamp(0.75rem,2vh,1.1rem)]"
+            >
+              <p className="col-span-12 flex items-baseline gap-x-3 lg:col-span-9 lg:col-start-4">
+                <span
+                  className="u-display shrink-0 text-ash transition-colors duration-500 group-hover:text-cream group-focus-visible:text-cream"
+                  style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.75rem)' }}
+                >
                   {s.name}
                 </span>
-                <span lang="hi" className="u-deva text-dim" style={{ fontSize: '0.875rem' }}>
+                <span lang="hi" className="u-deva shrink-0 text-dim" style={{ fontSize: '0.875rem' }}>
                   {s.nameDeva}
                 </span>
-              </span>
-              <span className="u-mono col-span-10 col-start-3 text-dim sm:col-span-4 sm:col-start-auto lg:col-span-3">
+                <span className="u-mono hidden shrink-0 text-dim sm:inline">
+                  {s.occupation.replace(/^The /, '')}
+                  <span className="opacity-40"> · </span>
+                  {s.place}
+                </span>
+                <Leader always />
+                <span className="u-label shrink-0 text-dim/70">In production</span>
+              </p>
+              {/* On a phone the trade and town drop under the name, so the
+                  state keeps its place at the end of the line. */}
+              <p className="u-mono col-span-12 mt-1 text-dim sm:hidden">
                 {s.occupation.replace(/^The /, '')}
                 <span className="opacity-40"> · </span>
                 {s.place}
-              </span>
-              <span className="u-label col-span-10 col-start-3 text-dim/70 sm:col-span-3 sm:col-start-auto sm:text-right lg:col-span-2">
-                In production
-              </span>
-            </div>
+              </p>
+            </Link>
           </motion.li>
         ))}
         {filing && (
           <motion.li {...rise(0, 12)} className="border-t border-b border-paper/10">
             <div className="u-grid items-baseline gap-y-1 py-[clamp(0.75rem,2vh,1.1rem)]">
-              <span aria-hidden className="u-mono col-span-2 text-dim/60 sm:col-span-1 lg:col-start-4">
-                —
-              </span>
-              <span className="col-span-10 flex flex-wrap items-baseline gap-x-3 sm:col-span-4 lg:col-span-3">
-                <span className="u-display text-ash" style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.75rem)' }}>
+              <p className="col-span-12 flex items-baseline gap-x-3 lg:col-span-9 lg:col-start-4">
+                <span className="u-display shrink-0 text-ash" style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.75rem)' }}>
                   {filing.title}
                 </span>
-                <span lang="hi" className="u-deva text-dim" style={{ fontSize: '0.875rem' }}>
+                <span lang="hi" className="u-deva shrink-0 text-dim" style={{ fontSize: '0.875rem' }}>
                   {filing.deva}
                 </span>
-              </span>
-              <span className="u-mono col-span-10 col-start-3 max-w-[40ch] text-dim sm:col-span-4 sm:col-start-auto lg:col-span-3">
-                {filing.line}
-              </span>
-              <span className="u-label col-span-10 col-start-3 text-dim/70 sm:col-span-3 sm:col-start-auto sm:text-right lg:col-span-2">
-                {filing.tally}
-              </span>
+                <Leader always />
+                <span className="u-label shrink-0 text-dim/70">{filing.tally}</span>
+              </p>
+              <p className="u-mono col-span-12 max-w-[48ch] text-dim lg:col-span-6 lg:col-start-4">{filing.line}</p>
             </div>
           </motion.li>
         )}
@@ -243,5 +296,71 @@ export function Contents() {
         </motion.p>
       </div>
     </section>
+  )
+}
+
+const DEVA_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९']
+const toDeva = (n: string) => n.replace(/\d/g, (d) => DEVA_DIGITS[Number(d)])
+
+/** A group of the contents: a running label, and what the group is, counted. */
+function Group({ label, note, tally: count }: { label: string; note?: string; tally?: string }) {
+  return (
+    <div className="u-pad pt-[clamp(3rem,9vh,5.5rem)]">
+      <motion.div {...fade()} className="u-grid items-baseline gap-y-2">
+        <h3 className="u-label col-span-12 text-dim lg:col-span-3">{label}</h3>
+        {note && <p className="u-mono col-span-12 max-w-[52ch] text-dim lg:col-span-6 lg:col-start-4">{note}</p>}
+        {count && (
+          <p className="u-mono col-span-12 text-dim/70 lg:col-span-2 lg:col-start-11 lg:text-right">{count}</p>
+        )}
+      </motion.div>
+    </div>
+  )
+}
+
+/** The dotted leader a printed contents runs from an entry to its figure. */
+function Leader({ always = false }: { always?: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`min-w-[1.5rem] flex-1 translate-y-[-0.25em] border-b border-dotted border-paper/20 ${always ? 'block' : 'hidden sm:block'}`}
+    />
+  )
+}
+
+/** One entry of the contents that is not a document: its title, what it is, and its figure. */
+function Entry({
+  to,
+  title,
+  deva,
+  line,
+  tally: count,
+  delay = 0,
+}: {
+  to: string
+  title: string
+  deva: string
+  line: string
+  tally: string
+  delay?: number
+}) {
+  return (
+    <motion.li {...rise(delay, 18)} className="border-t border-paper/10 last:border-b">
+      <Link to={to} className="group u-grid items-baseline gap-y-2 py-[clamp(1rem,2.8vh,1.6rem)]">
+        <span className="col-span-12 flex flex-wrap items-baseline gap-x-[0.5em] gap-y-1 lg:col-span-9 lg:col-start-4">
+          <span
+            className="u-display text-cream transition-[transform,color] duration-[500ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:translate-x-[0.06em] group-hover:text-clay-ink group-focus-visible:text-clay-ink"
+            style={{ fontSize: 'clamp(1.375rem, 2.8vw, 2.25rem)' }}
+          >
+            {title}
+          </span>
+          <span lang="hi" className="u-deva text-dim" style={{ fontSize: 'clamp(0.875rem, 1.4vw, 1.0625rem)' }}>
+            {deva}
+          </span>
+          <Leader />
+          <span className="u-mono basis-full text-dim/80 sm:basis-auto">{count}</span>
+        </span>
+        <span className="u-mono col-span-12 max-w-[52ch] text-dim lg:col-span-6 lg:col-start-4">{line}</span>
+      </Link>
+    </motion.li>
   )
 }

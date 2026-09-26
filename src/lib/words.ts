@@ -13,3 +13,9 @@ export const inWords = (n: number, capital = false) => {
 /** "Raju's day", "Raju's day and Shanti's corner", "a, b and c". */
 export const listed = (items: string[]) =>
   items.length < 2 ? (items[0] ?? '') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`
+
+/**
+ * A Creative Commons licence, named the same way everywhere: "CC BY 2.0",
+ * "CC0 1.0" — never "BY 2.0", and never "CC CC0 1.0".
+ */
+export const licence = (name: string) => (/^CC/i.test(name) ? name : `CC ${name}`)

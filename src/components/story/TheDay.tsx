@@ -6,6 +6,7 @@ import { Frame } from '../Frame'
 import { ChapterMark } from '../ChapterMark'
 import { setScroll } from '../../lib/useLenis'
 import { DISSOLVE, fade, reveal, rise, uncover, usePrefersReducedMotion } from '../../lib/motion'
+import { inWords } from '../../lib/words'
 
 /**
  * THE DAY.
@@ -139,7 +140,7 @@ export function TheDay({ doc }: { doc: DayDoc }) {
             style={{ fontSize: 'clamp(2rem, 6vw, 5rem)', lineHeight: 1 }}
           >
             Fifteen hours.
-            <span className="block text-ash">Seven of them are here.</span>
+            <span className="block text-ash">{inWords(hours.length, true)} of them are here.</span>
           </motion.h2>
           <motion.p {...rise(0.1)} className="u-mono col-span-12 max-w-[40ch] self-end text-ash lg:col-span-4 lg:col-start-9">
             One frame an hour, in the light of that hour. The clock on the right keeps the real distance between them.
@@ -333,7 +334,7 @@ function HourSheet({
         className="pointer-events-auto flex flex-col items-end gap-[0.4rem] py-1 pl-8"
       >
         <span className="sr-only">
-          {open ? 'Hide the hours. ' : 'Show all seven hours. '}
+          {open ? 'Hide the hours. ' : `Show all ${inWords(hours.length)} hours. `}
           Chapter {active + 1} of {hours.length}, {hours[active].time}.
         </span>
         <span aria-hidden className="flex items-baseline gap-2 leading-none">

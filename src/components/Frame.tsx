@@ -1,5 +1,6 @@
 import { useState, type CSSProperties } from 'react'
 import { FRAMES, type FrameId } from '../data/frames.generated'
+import { licence } from '../lib/words'
 
 /** Below this, a frame that goes full-bleed is served its portrait re-crop. */
 const NARROW = '(max-width: 700px)'
@@ -80,7 +81,7 @@ export function Credit({ id, className = '' }: { id: FrameId; className?: string
         rel="noreferrer noopener"
         className="decoration-current/25 underline-offset-[3px] transition-colors hover:text-clay-ink hover:underline"
       >
-        CC {c.license}
+        {licence(c.license)}
       </a>
     </span>
   )

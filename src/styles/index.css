@@ -175,6 +175,12 @@
     outline: 1px solid var(--color-clay);
     outline-offset: 4px;
   }
+  /* Except on a place focus is only set down — the page, or the section a link
+     lands on. It is not a control, and a hairline round a whole page reads as
+     a fault; the next Tab still starts from here. */
+  [tabindex='-1']:focus-visible {
+    outline: none;
+  }
 }
 
 /* ───────────────────────────────────────────────────────────────

@@ -12,10 +12,11 @@ import type { Track } from './story'
  * person who made it gave it. Nothing is restated here.
  *
  * What is added is one honest line per recording about where it came from,
- * read off that title and nothing else. None of these were recorded in any of
- * the towns ROZ has stories in: they stand in for an hour of a day until real
- * location sound exists, and the page says so rather than captioning a stream
- * of crickets "Delhi".
+ * read off that title and nothing else. Nothing in any of their records places
+ * them in a town ROZ has a story in — nor rules it out, which is why no page
+ * says either. They stand in for an hour of a day until real location sound
+ * exists, and the page says so rather than captioning a stream of crickets
+ * "Delhi".
  */
 
 /**
@@ -76,3 +77,9 @@ export const RECORDISTS = Array.from(
 )
 
 export const TOTAL_SECONDS = SOUNDSCAPES.reduce((n, s) => n + s.sound.seconds, 0)
+
+/** How many recordings name India in their own title — the only place any of them is named. */
+export const NAMED_INDIA = SOUNDSCAPES.filter((s) => /india/i.test(s.sound.credit.title)).length
+
+/** How many days the recordings stand in for — one per document that lists any. */
+export const DAYS_HEARD = new Set(SOUNDSCAPES.map((s) => s.story.slug)).size

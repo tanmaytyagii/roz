@@ -12,6 +12,8 @@ import type {
 import { Frame, Credit } from '../Frame'
 import { ChapterMark } from '../ChapterMark'
 import { MarkedFrame } from './MarkedFrame'
+import { MarginNote } from '../FieldNote'
+import { marginNote, type Note } from '../../data/notes'
 import { Transcript } from './TheWords'
 import { fade, liftLine, reveal, rise, uncover, usePrefersReducedMotion } from '../../lib/motion'
 
@@ -32,7 +34,7 @@ export function Sequence({ doc }: { doc: SequenceDoc }) {
           case 'plate':
             return <PlateView key={c.id} chapter={c} />
           case 'stand-in':
-            return <StandInView key={c.id} chapter={c} />
+            return <StandInView key={c.id} chapter={c} margin={marginNote(doc.slug, c.id)} />
           case 'marked':
             return <MarkedFrame key={c.id} chapter={c} n={n} />
           case 'words':
@@ -126,7 +128,7 @@ function PlateView({ chapter: c }: { chapter: PlateChapter }) {
  * not written directly under it — a photograph borrowed for a moment nobody
  * photographed should look borrowed.
  */
-function StandInView({ chapter: c }: { chapter: StandInChapter }) {
+function StandInView({ chapter: c, margin }: { chapter: StandInChapter; margin?: Note }) {
   return (
     <section id={c.id} data-canvas="ink" className="relative bg-ink">
       <div className="u-pad u-grid items-end gap-y-[clamp(2rem,5vh,3rem)] py-[clamp(5rem,16vh,10rem)]">
@@ -170,6 +172,15 @@ function StandInView({ chapter: c }: { chapter: StandInChapter }) {
             </p>
           </figcaption>
         </motion.figure>
+
+        {/* In the margin under the line: what the archive knows about this
+            frame that the caption does not say. */}
+        {margin && (
+          <MarginNote
+            note={margin}
+            className="col-span-12 mt-[clamp(1rem,3vh,2rem)] sm:col-span-5 lg:col-span-4 lg:col-start-2"
+          />
+        )}
       </div>
     </section>
   )
